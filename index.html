@@ -675,7 +675,9 @@
 // SECURITY NOTE: Store the password server-side (Supabase Edge Function)
 // rather than hardcoded here. This is client-side only as a convenience layer.
 // The real security gate is Supabase RLS — only authenticated sessions can SELECT.
-const ADMIN_PASSWORD    = 'movietime2026';  // ← Change this
+// ⚠️  IMPORTANT: Change ADMIN_PASSWORD before deploying. Anyone who views source
+//     can see this password. For production, use Supabase Auth or an Edge Function.
+const ADMIN_PASSWORD    = 'movietime2026';  // ← CHANGE THIS — and use Supabase Auth in production
 const SESSION_DURATION  = 30 * 60 * 1000;  // 30 minutes
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION  = 5 * 60 * 1000;   // 5 minutes lockout after 5 fails
@@ -690,6 +692,7 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 let allBookings     = [];
 let currentFilter   = 'all';
 let sessionExpiry   = 0;
+let sessionStartTime = null;
 let loginAttempts   = 0;
 let lockedUntil     = 0;
 let rejectTargetId  = null;
@@ -713,7 +716,8 @@ function doLogin() {
 
   // Simulate tiny delay to prevent instant brute-force timing
   setTimeout(() => {
-    if (pwd === ADMIN_PASSWORD) {
+    const activePassword = window._sessionPassword || ADMIN_PASSWORD;
+    if (pwd === activePassword) {
       loginAttempts = 0;
       sessionExpiry = Date.now() + SESSION_DURATION;
       document.getElementById('login-screen').style.display = 'none';
@@ -768,12 +772,14 @@ function startSessionTimer() {
     if (remaining <= 0) {
       clearInterval(sessionTickTimer);
       clearInterval(autoRefreshTimer);
-      document.getElementById('session-lock').classList.add('show');
+      const lock = document.getElementById('session-lock');
+      if (lock) lock.classList.add('show');
       return;
     }
     const m = String(Math.floor(remaining / 60000)).padStart(2,'0');
     const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2,'0');
-    document.getElementById('session-timer').textContent = `Session: ${m}:${s}`;
+    const timerEl = document.getElementById('session-timer');
+    if (timerEl) timerEl.textContent = `Session: ${m}:${s}`;
   }, 1000);
 }
 
@@ -793,14 +799,18 @@ function startAutoRefresh() {
   clearInterval(autoRefreshTimer);
   clearInterval(countdownTimer);
 
-  countdownTimer = setInterval(() => {
+  // Combined timer: counts down and triggers refresh
+  autoRefreshTimer = setInterval(() => {
     countdownSecs--;
-    document.getElementById('refresh-countdown').textContent = countdownSecs + 's';
+    const el = document.getElementById('refresh-countdown');
+    if (el) el.textContent = countdownSecs + 's';
     if (countdownSecs <= 0) {
       countdownSecs = AUTO_REFRESH_SECS;
       loadBookings();
     }
   }, 1000);
+  // Keep countdownTimer as alias for backward compat
+  countdownTimer = autoRefreshTimer;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -808,12 +818,14 @@ function startAutoRefresh() {
 // ══════════════════════════════════════════════════════════════
 async function loadBookings() {
   countdownSecs = AUTO_REFRESH_SECS; // Reset countdown
-  document.getElementById('refresh-ring').classList.add('spinning');
-  document.getElementById('refresh-countdown').textContent = '…';
+  const ring = document.getElementById('refresh-ring');
+  const cdEl = document.getElementById('refresh-countdown');
+  if (ring) ring.classList.add('spinning');
+  if (cdEl) cdEl.textContent = '…';
 
   try {
     const res = await fetch(
-      `${SB_URL}/rest/v1/ticket_bookings?order=created_at.desc&limit=500`,
+      `${SB_URL}/rest/v1/ticket_bookings?order=submitted_at.desc&limit=500`,
       { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -822,14 +834,15 @@ async function loadBookings() {
     renderAll();
   } catch(e) {
     showToast('Failed to load bookings: ' + e.message, 'error');
-    document.getElementById('bookings-tbody').innerHTML = `
+    const tbody = document.getElementById('bookings-tbody');
+    if (tbody) tbody.innerHTML = `
       <tr class="state-row"><td colspan="11">
         <div class="state-icon">⚠️</div>
         <div class="state-msg" style="color:var(--red)">Connection error. Check your internet and try refreshing.</div>
       </td></tr>`;
   } finally {
-    document.getElementById('refresh-ring').classList.remove('spinning');
-    document.getElementById('refresh-countdown').textContent = AUTO_REFRESH_SECS + 's';
+    if (ring) ring.classList.remove('spinning');
+    if (cdEl) cdEl.textContent = AUTO_REFRESH_SECS + 's';
     countdownSecs = AUTO_REFRESH_SECS;
   }
 }
@@ -844,15 +857,16 @@ function updateStats() {
   const revenue  = allBookings.filter(b => b.approval_status === 'approved').reduce((s,b) => s + Number(b.total_amount||0), 0);
   const tickets  = allBookings.reduce((s,b) => s + Number(b.quantity||0), 0);
 
-  document.getElementById('s-pending').textContent  = pending;
-  document.getElementById('s-approved').textContent = approved;
-  document.getElementById('s-rejected').textContent = rejected;
-  document.getElementById('s-revenue').textContent  = '₹' + revenue.toLocaleString('en-IN');
-  document.getElementById('s-tickets').textContent  = tickets;
-  document.getElementById('pending-count-text').textContent = pending + ' pending';
+  const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  safeSet('s-pending',  pending);
+  safeSet('s-approved', approved);
+  safeSet('s-rejected', rejected);
+  safeSet('s-revenue',  '₹' + revenue.toLocaleString('en-IN'));
+  safeSet('s-tickets',  tickets);
+  safeSet('pending-count-text', pending + ' pending');
 
-  // Pulse badge only if there are pending
-  document.querySelector('.badge-dot').style.display = pending > 0 ? '' : 'none';
+  const dot = document.querySelector('.badge-dot');
+  if (dot) dot.style.display = pending > 0 ? '' : 'none';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1326,8 +1340,6 @@ function logLogin() { addHistory('login', '', 'Admin session started'); }
 // ══════════════════════════════════════════════════════════════
 //  ACCOUNT PAGE
 // ══════════════════════════════════════════════════════════════
-let sessionStartTime = null;
-
 function refreshAccountInfo() {
   if (sessionStartTime) {
     document.getElementById('acct-session-start').textContent = formatDate(sessionStartTime);
@@ -1345,7 +1357,7 @@ function changePassword() {
   const okEl    = document.getElementById('pwd-change-ok');
   errEl.style.display = 'none'; okEl.style.display = 'none';
 
-  if (cur !== ADMIN_PASSWORD) { errEl.textContent = 'Current password is incorrect.'; errEl.style.display = 'block'; return; }
+  if (cur !== (window._sessionPassword || ADMIN_PASSWORD)) { errEl.textContent = 'Current password is incorrect.'; errEl.style.display = 'block'; return; }
   if (nw.length < 8) { errEl.textContent = 'New password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
   if (nw !== confirm) { errEl.textContent = 'New passwords do not match.'; errEl.style.display = 'block'; return; }
 
