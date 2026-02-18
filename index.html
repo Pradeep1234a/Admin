@@ -100,6 +100,28 @@ td{padding:11px 14px;vertical-align:middle}
 .cmp-btn{background:rgba(255,107,0,.1);color:var(--amber);border:1px solid rgba(255,107,0,.25)}
 .cmp-btn:hover{background:rgba(255,107,0,.2)}
 .cmp-btn.selected{background:rgba(255,107,0,.3);border-color:var(--flame);color:var(--flame)}
+.del-btn{background:rgba(255,23,68,.1);color:var(--red);border:1px solid rgba(255,23,68,.25)}
+.del-btn:hover{background:rgba(255,23,68,.22)}
+.danger-btn{background:rgba(255,23,68,.18);color:var(--red);border:1px solid rgba(255,23,68,.4)!important}
+.danger-btn:hover{background:rgba(255,23,68,.3)}
+
+/* BULK BAR */
+.bulk-bar{background:var(--ink);border:1px solid rgba(255,23,68,.25);border-radius:var(--r);padding:.85rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bulk-label{font-size:.8rem;font-weight:700;color:var(--red);white-space:nowrap}
+.bulk-count{font-size:.8rem;color:var(--silver);flex:1}
+.bulk-actions{display:flex;gap:8px}
+input[type=checkbox]{accent-color:var(--flame);width:15px;height:15px;cursor:pointer;vertical-align:middle}
+th.cb-col,td.cb-col{width:36px;padding-left:14px;padding-right:4px}
+
+/* CONFIRM MODAL */
+.confirm-modal{max-width:420px}
+.confirm-body{padding:2rem 1.5rem;text-align:center}
+.confirm-icon{font-size:3rem;margin-bottom:.75rem}
+.confirm-body h4{font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:.6rem}
+.confirm-body p{font-size:.85rem;color:var(--ash);line-height:1.6}
+.confirm-highlight{color:var(--red);font-weight:700}
+.confirm-actions{padding:1rem 1.5rem;border-top:1px solid var(--graphite);display:flex;gap:10px}
+.confirm-actions .action-btn{flex:1;padding:12px;font-size:.88rem}
 
 /* COMPARE BAR */
 .compare-bar{background:var(--ink);border:1px solid rgba(255,107,0,.25);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -187,6 +209,24 @@ td{padding:11px 14px;vertical-align:middle}
 .v-actions{display:flex;gap:10px;margin-top:1rem}
 .v-actions .action-btn{flex:1;padding:12px;font-size:.85rem}
 
+/* SCREENSHOT GALLERY */
+.ss-gallery-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.ss-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.ss-card{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .15s;cursor:pointer}
+.ss-card:hover{border-color:var(--flame);transform:translateY(-2px)}
+.ss-card-img-wrap{width:100%;aspect-ratio:4/3;background:var(--charcoal);overflow:hidden;position:relative}
+.ss-card-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s}
+.ss-card-img.loading-img{opacity:.4}
+.ss-card-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--iron)}
+.ss-card-badge{position:absolute;top:8px;right:8px;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:50px}
+.ss-card-body{padding:.85rem}
+.ss-card-name{font-size:.78rem;font-weight:700;color:var(--white);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ss-card-meta{font-size:.7rem;color:var(--ash)}
+.ss-card-booking{font-size:.7rem;color:var(--blue);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.ss-card-booking:hover{text-decoration:underline}
+.ss-card-unlinked{font-size:.7rem;color:var(--iron);margin-top:4px;font-style:italic}
+.ss-card-actions{display:flex;gap:6px;margin-top:.75rem}
+
 /* EMPTY / LOADING */
 .empty{text-align:center;padding:3rem 1rem;color:var(--ash)}
 .empty-icon{font-size:3rem;margin-bottom:1rem}
@@ -227,6 +267,11 @@ td{padding:11px 14px;vertical-align:middle}
         Rejected
       </div>
       <div class="nav-sep">Tools</div>
+      <div class="nav-item" id="nav-screenshots" onclick="showPage('screenshots',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Screenshots
+        <span class="nav-badge" id="ss-count" style="background:var(--blue);color:#000">0</span>
+      </div>
       <div class="nav-item" id="nav-verify" onclick="showPage('verify',this)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Ticket Verify
@@ -279,12 +324,23 @@ td{padding:11px 14px;vertical-align:middle}
           </div>
         </div>
 
+        <!-- BULK DELETE BAR (hidden until rows checked) -->
+        <div class="bulk-bar hidden" id="bulk-bar">
+          <span class="bulk-label">🗑️ Delete Mode</span>
+          <span class="bulk-count" id="bulk-count">0 selected</span>
+          <div class="bulk-actions">
+            <button class="action-btn danger-btn" id="bulk-del-btn" onclick="confirmBulkDelete()">🗑️ Delete Selected</button>
+            <button class="action-btn view-btn" onclick="clearBulkSelect()">✕ Cancel</button>
+          </div>
+        </div>
+
         <div class="filters">
           <button class="filter-btn active" id="fb-all"      onclick="setFilter('all')">All</button>
           <button class="filter-btn"        id="fb-pending"  onclick="setFilter('pending')">⏳ Pending</button>
           <button class="filter-btn"        id="fb-approved" onclick="setFilter('approved')">✅ Approved</button>
           <button class="filter-btn"        id="fb-rejected" onclick="setFilter('rejected')">❌ Rejected</button>
           <input class="search-input" type="text" id="search-inp" placeholder="Search name, email, booking ID, UTR…" oninput="applySearch(this.value)">
+          <button class="refresh-btn danger-btn" onclick="confirmClearAll()" title="Delete all visible bookings">🗑️ Clear All</button>
         </div>
         <div id="table-area"><div class="loading"><span class="spin"></span> Loading bookings…</div></div>
       </div>
@@ -297,6 +353,17 @@ td{padding:11px 14px;vertical-align:middle}
       <!-- PAGE: REJECTED -->
       <div class="page" id="page-rejected">
         <div id="table-area-rejected"><div class="loading"><span class="spin"></span> Loading…</div></div>
+      </div>
+
+      <!-- PAGE: SCREENSHOTS -->
+      <div class="page" id="page-screenshots">
+        <div class="ss-gallery-toolbar">
+          <span id="ss-gallery-count" style="font-size:.82rem;color:var(--ash)">Loading…</span>
+          <button class="refresh-btn" onclick="loadScreenshots()">↻ Refresh</button>
+        </div>
+        <div id="ss-gallery-area">
+          <div class="loading"><span class="spin"></span> Loading screenshots…</div>
+        </div>
       </div>
 
       <!-- PAGE: TICKET VERIFY -->
@@ -340,6 +407,7 @@ td{padding:11px 14px;vertical-align:middle}
       <button class="action-btn approve-btn" id="modal-approve-btn" onclick="modalAction('approved')">✅ Approve</button>
       <button class="action-btn reject-btn"  id="modal-reject-btn"  onclick="modalAction('rejected')">❌ Reject</button>
       <button class="action-btn ss-btn"      id="modal-ss-open-btn" onclick="openLightbox(document.getElementById('modal-ss-img').src)">🖼 Full Screenshot</button>
+      <button class="action-btn del-btn"     id="modal-del-btn"     onclick="deleteFromModal()">🗑️ Delete</button>
       <button class="action-btn view-btn"    onclick="closeDetailModal()">Close</button>
     </div>
   </div>
@@ -370,6 +438,21 @@ td{padding:11px 14px;vertical-align:middle}
   </div>
 </div>
 
+<!-- ═══ CONFIRM DELETE MODAL ═══ -->
+<div class="modal-overlay hidden" id="confirm-modal">
+  <div class="modal confirm-modal">
+    <div class="confirm-body">
+      <div class="confirm-icon">🗑️</div>
+      <h4 id="confirm-title">Delete Booking?</h4>
+      <p id="confirm-msg">This action cannot be undone.</p>
+    </div>
+    <div class="confirm-actions">
+      <button class="action-btn danger-btn" id="confirm-ok-btn" onclick="confirmOk()">Yes, Delete</button>
+      <button class="action-btn view-btn" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -380,6 +463,15 @@ td{padding:11px 14px;vertical-align:middle}
 const SB_URL = 'https://vjxidlnggrpbttxmrfch.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqeGlkbG5nZ3JwYnR0eG1yZmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjQ2MzYsImV4cCI6MjA4NzAwMDYzNn0.G7OXaE8hi-1ELJAmw_-gLi658henIj2NjIBqFd3HWWo';
 const H = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
+const BUCKET      = 'payment-screenshots';
+const PUBLIC_BASE = `${SB_URL}/storage/v1/object/public/${BUCKET}/`;
+
+function ssUrl(raw) {
+  if (!raw) return null;
+  if (raw.startsWith('http')) return raw;
+  const clean = raw.replace(new RegExp('^' + BUCKET + '/?'), '').replace(/^//, '');
+  return PUBLIC_BASE + clean;
+}
 
 // ══════════════════════════════════════
 //  STATE
@@ -394,8 +486,23 @@ let compareList  = [];     // max 2 booking ids
 
 // Boot
 loadBookings();
+loadScreenshotCount();
 
 // ══════════════════════════════════════
+// Load screenshot count for sidebar badge
+async function loadScreenshotCount() {
+  try {
+    const res = await fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
+      method: 'POST',
+      headers: { ...H, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit: 200, offset: 0 })
+    });
+    if (!res.ok) return;
+    const files = await res.json();
+    document.getElementById('ss-count').textContent = files.length;
+  } catch(_) {}
+}
+
 //  PAGE NAV
 // ══════════════════════════════════════
 function showPage(page, el) {
@@ -404,10 +511,11 @@ function showPage(page, el) {
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
-  const titles = {bookings:'All Bookings',approved:'Approved Bookings',rejected:'Rejected Bookings',verify:'🔍 Ticket Verifier'};
+  const titles = {bookings:'All Bookings',approved:'Approved Bookings',rejected:'Rejected Bookings',screenshots:'🖼️ Screenshots',verify:'🔍 Ticket Verifier'};
   document.getElementById('view-title').textContent = titles[page] || page;
-  if (page === 'approved') renderSubTable('approved');
-  if (page === 'rejected') renderSubTable('rejected');
+  if (page === 'approved')    renderSubTable('approved');
+  if (page === 'rejected')    renderSubTable('rejected');
+  if (page === 'screenshots') loadScreenshots();
 }
 
 // ══════════════════════════════════════
@@ -430,6 +538,97 @@ async function loadBookings() {
     document.getElementById('table-area').innerHTML =
       `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">${e.message}</div></div>`;
   }
+}
+
+// ══════════════════════════════════════
+//  SCREENSHOTS GALLERY
+// ══════════════════════════════════════
+async function loadScreenshots() {
+  const area = document.getElementById('ss-gallery-area');
+  const countEl = document.getElementById('ss-gallery-count');
+  area.innerHTML = '<div class="loading"><span class="spin"></span> Loading screenshots…</div>';
+
+  try {
+    // Fetch all files from the bucket
+    const res = await fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
+      method: 'POST',
+      headers: { ...H, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit: 200, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
+    });
+    if (!res.ok) throw new Error('Storage fetch failed: ' + res.status);
+    const files = await res.json();
+
+    // Update count badge
+    document.getElementById('ss-count').textContent = files.length;
+    countEl.textContent = `${files.length} screenshot${files.length !== 1 ? 's' : ''} uploaded by users`;
+
+    if (!files.length) {
+      area.innerHTML = '<div class="empty"><div class="empty-icon">🖼️</div><div class="empty-text">No screenshots uploaded yet.</div></div>';
+      return;
+    }
+
+    renderGallery(files);
+  } catch(e) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">${e.message}</div></div>`;
+  }
+}
+
+function renderGallery(files) {
+  const area = document.getElementById('ss-gallery-area');
+
+  const cards = files.map(file => {
+    const url  = PUBLIC_BASE + encodeURIComponent(file.name);
+    const size = file.metadata?.size ? formatBytes(file.metadata.size) : '';
+    const date = file.created_at ? new Date(file.created_at).toLocaleString('en-IN', {dateStyle:'short', timeStyle:'short'}) : '';
+
+    // Try to match to a booking via screenshot_url
+    const linked = allBookings.find(b => {
+      const u = ssUrl(b.screenshot_url);
+      return u && (u.includes(file.name) || u.endsWith(encodeURIComponent(file.name)));
+    });
+
+    const statusColor = linked
+      ? { approved: 'var(--green)', pending: 'var(--yellow)', rejected: 'var(--red)' }[linked.approval_status] || 'var(--ash)'
+      : 'var(--iron)';
+
+    const badgeStyle = linked
+      ? `background:${statusColor};color:#000;opacity:.85`
+      : 'background:var(--iron);color:#000;opacity:.6';
+
+    return `<div class="ss-card" onclick="openLightbox('${url}', '${X(file.name)}')">
+      <div class="ss-card-img-wrap">
+        <img class="ss-card-img loading-img" src="${url}"
+          onload="this.classList.remove('loading-img')"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          alt="${X(file.name)}">
+        <div class="ss-card-no-img" style="display:none">🖼️</div>
+        ${linked ? `<span class="ss-card-badge" style="${badgeStyle}">${linked.approval_status}</span>` : ''}
+      </div>
+      <div class="ss-card-body">
+        <div class="ss-card-name" title="${X(file.name)}">${X(file.name)}</div>
+        <div class="ss-card-meta">${[size, date].filter(Boolean).join(' · ')}</div>
+        ${linked
+          ? `<div class="ss-card-booking" onclick="event.stopPropagation();openDetailModal('${linked.id}')">
+               🔗 ${X(linked.booking_id || linked.name || 'Booking')}
+             </div>`
+          : `<div class="ss-card-unlinked">Not linked to a booking</div>`
+        }
+        <div class="ss-card-actions">
+          <button class="action-btn ss-btn" style="flex:1" onclick="event.stopPropagation();openLightbox('${url}','${X(file.name)}')">🔍 Enlarge</button>
+          <button class="action-btn view-btn" onclick="event.stopPropagation();window.open('${url}','_blank')">↗</button>
+          ${linked ? `<button class="action-btn view-btn" onclick="event.stopPropagation();openDetailModal('${linked.id}')">📋 Booking</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  area.innerHTML = `<div class="ss-gallery-grid">${cards}</div>`;
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
 }
 
 // ══════════════════════════════════════
@@ -487,6 +686,7 @@ function renderSubTable(status) {
 function buildTableHTML(rows) {
   return `<div class="table-wrap"><table>
     <thead><tr>
+      <th class="cb-col"><input type="checkbox" id="chk-all" onchange="toggleSelectAll(this)" title="Select all"></th>
       <th>#</th><th>Booking ID</th><th>Name</th><th>Email</th>
       <th>Phone</th><th>Qty</th><th>Amount</th><th>UTR</th>
       <th>Date</th><th>Status</th><th>Actions</th>
@@ -499,8 +699,10 @@ function buildRowHTML(b, idx) {
   const dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}) : '—';
   const pnd = b.approval_status === 'pending';
   const sel = compareList.includes(b.id);
-  const ss  = !!b.screenshot_url;
-  return `<tr>
+  const ss  = !!ssUrl(b.screenshot_url);
+  const chk = bulkSelected.has(b.id);
+  return `<tr id="row-${b.id}" ${chk ? 'style="background:rgba(255,23,68,.05)"' : ''}>
+    <td class="cb-col"><input type="checkbox" class="row-chk" data-id="${b.id}" ${chk?'checked':''} onchange="toggleRowSelect(this)"></td>
     <td style="color:var(--ash)">${idx}</td>
     <td><span class="mono">${b.booking_id||'—'}</span></td>
     <td class="name-cell">${X(b.name||'—')}</td>
@@ -514,12 +716,13 @@ function buildRowHTML(b, idx) {
     <td>
       <div class="action-wrap">
         <button class="action-btn view-btn" onclick="openDetailModal('${b.id}')">👁️</button>
-        ${ss ? `<button class="action-btn ss-btn" title="View Screenshot" onclick="openLightbox('${b.screenshot_url}','${X(b.name||'')}')">🖼</button>` : ''}
+        ${ss ? `<button class="action-btn ss-btn" title="View Screenshot" onclick="openLightbox('${ssUrl(b.screenshot_url)}','${X(b.name||'')}')">🖼</button>` : ''}
         <button class="action-btn cmp-btn ${sel?'selected':''}" title="Add to Compare" onclick="toggleCompare('${b.id}')">⚖️</button>
         ${pnd ? `
           <button class="action-btn approve-btn" onclick="updateStatus('${b.id}','approved')">✅</button>
           <button class="action-btn reject-btn"  onclick="updateStatus('${b.id}','rejected')">❌</button>
         ` : ''}
+        <button class="action-btn del-btn" title="Delete booking" onclick="confirmSingleDelete('${b.id}')">🗑️</button>
       </div>
     </td>
   </tr>`;
@@ -563,7 +766,7 @@ function openDetailModal(id) {
   const link  = document.getElementById('modal-ss-link');
   const ssBtn = document.getElementById('modal-ss-open-btn');
   if (b.screenshot_url) {
-    img.src = b.screenshot_url; link.href = b.screenshot_url;
+    img.src = ssUrl(b.screenshot_url); link.href = ssUrl(b.screenshot_url);
     wrap.classList.remove('hidden'); ssBtn.classList.remove('hidden');
   } else {
     wrap.classList.add('hidden'); ssBtn.classList.add('hidden');
@@ -583,6 +786,12 @@ async function modalAction(status) {
   const id = activeModal.id;
   closeDetailModal();
   await updateStatus(id, status);
+}
+function deleteFromModal() {
+  if (!activeModal) return;
+  const id = activeModal.id;
+  closeDetailModal();
+  confirmSingleDelete(id);
 }
 document.getElementById('detail-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('detail-modal')) closeDetailModal();
@@ -743,7 +952,7 @@ function doVerify() {
     </div>
     ${b.screenshot_url ? `
       <div style="margin-top:.5rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);margin-bottom:8px">Payment Screenshot</div>
-      <img class="v-ss" src="${b.screenshot_url}" onclick="openLightbox('${b.screenshot_url}','${X(b.name||'')}')" title="Click to enlarge">
+      <img class="v-ss" src="${ssUrl(b.screenshot_url)}" onclick="openLightbox('${ssUrl(b.screenshot_url)}','${X(b.name||'')}')" title="Click to enlarge">
     ` : ''}
     ${s === 'pending' ? `
       <div class="v-actions">
@@ -751,6 +960,140 @@ function doVerify() {
         <button class="action-btn reject-btn"  onclick="updateStatus('${b.id}','rejected');setTimeout(doVerify,400)">❌ Reject</button>
       </div>` : ''}
   `;
+}
+
+// ══════════════════════════════════════
+//  DELETE — SINGLE & BULK & CLEAR ALL
+// ══════════════════════════════════════
+let bulkSelected = new Set();
+let confirmCallback = null;
+
+// Checkbox: single row
+function toggleRowSelect(chk) {
+  const id = chk.dataset.id;
+  if (chk.checked) bulkSelected.add(id);
+  else bulkSelected.delete(id);
+  syncBulkBar();
+  // tint row
+  const row = document.getElementById('row-' + id);
+  if (row) row.style.background = chk.checked ? 'rgba(255,23,68,.05)' : '';
+}
+
+// Checkbox: select all visible
+function toggleSelectAll(chk) {
+  document.querySelectorAll('.row-chk').forEach(c => {
+    c.checked = chk.checked;
+    const id = c.dataset.id;
+    if (chk.checked) bulkSelected.add(id);
+    else bulkSelected.delete(id);
+    const row = document.getElementById('row-' + id);
+    if (row) row.style.background = chk.checked ? 'rgba(255,23,68,.05)' : '';
+  });
+  syncBulkBar();
+}
+
+function syncBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  const cnt = document.getElementById('bulk-count');
+  const btn = document.getElementById('bulk-del-btn');
+  if (!bulkSelected.size) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  cnt.textContent = `${bulkSelected.size} booking${bulkSelected.size>1?'s':''} selected`;
+  btn.textContent = `🗑️ Delete ${bulkSelected.size} Selected`;
+}
+
+function clearBulkSelect() {
+  bulkSelected.clear();
+  document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; });
+  const ca = document.getElementById('chk-all');
+  if (ca) ca.checked = false;
+  document.querySelectorAll('tr[id^="row-"]').forEach(r => r.style.background = '');
+  syncBulkBar();
+}
+
+// ── Confirm modal wiring ──
+function showConfirm(title, msg, okLabel, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').innerHTML = msg;
+  document.getElementById('confirm-ok-btn').textContent = okLabel;
+  confirmCallback = cb;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+}
+function confirmOk() {
+  closeConfirm();
+  if (confirmCallback) confirmCallback();
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.add('hidden');
+  confirmCallback = null;
+}
+document.getElementById('confirm-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-modal')) closeConfirm();
+});
+
+// ── Single delete ──
+function confirmSingleDelete(id) {
+  const b = allBookings.find(x => x.id === id);
+  const name = b ? (b.name || b.booking_id || 'this booking') : 'this booking';
+  showConfirm(
+    'Delete Booking?',
+    `You are about to permanently delete <span class="confirm-highlight">${X(name)}</span>.<br>This cannot be undone.`,
+    '🗑️ Yes, Delete',
+    () => deleteBookings([id])
+  );
+}
+
+// ── Bulk delete ──
+function confirmBulkDelete() {
+  const n = bulkSelected.size;
+  if (!n) return;
+  showConfirm(
+    `Delete ${n} Booking${n>1?'s':''}?`,
+    `You are about to permanently delete <span class="confirm-highlight">${n} booking${n>1?'s':''}</span>.<br>This cannot be undone.`,
+    `🗑️ Delete ${n} Booking${n>1?'s':''}`,
+    () => deleteBookings([...bulkSelected])
+  );
+}
+
+// ── Clear all visible (respects current filter) ──
+function confirmClearAll() {
+  const ids = filteredBkgs.map(b => b.id);
+  if (!ids.length) { showToast('No bookings to delete.', true); return; }
+  const filterLabel = curFilter === 'all' ? 'ALL bookings' : `all ${curFilter.toUpperCase()} bookings`;
+  showConfirm(
+    'Clear All?',
+    `You are about to delete <span class="confirm-highlight">${ids.length} ${filterLabel}</span>.<br><br>This is permanent and cannot be undone.`,
+    `🗑️ Delete All ${ids.length}`,
+    () => deleteBookings(ids)
+  );
+}
+
+// ── Execute delete ──
+async function deleteBookings(ids) {
+  if (!ids.length) return;
+  let failed = 0;
+  // Supabase REST DELETE supports filtering by id using `in`
+  try {
+    // Build id list query: id=in.(id1,id2,...)
+    const idList = ids.map(id => id).join(',');
+    const res = await fetch(`${SB_URL}/rest/v1/ticket_bookings?id=in.(${idList})`, {
+      method: 'DELETE',
+      headers: { ...H, 'Prefer': 'return=minimal' }
+    });
+    if (!res.ok) { failed = ids.length; }
+  } catch(e) { failed = ids.length; }
+
+  if (failed) { showToast('Delete failed. Check permissions.', true); return; }
+
+  // Remove from local state
+  const deleted = new Set(ids);
+  allBookings = allBookings.filter(b => !deleted.has(b.id));
+  bulkSelected.clear();
+  syncBulkBar();
+  updateStats();
+  applyFilters();
+  if (curPage === 'approved' || curPage === 'rejected') renderSubTable(curPage);
+  showToast(`🗑️ Deleted ${ids.length} booking${ids.length>1?'s':''}.`);
 }
 
 // ══════════════════════════════════════
@@ -788,6 +1131,7 @@ document.addEventListener('keydown', e => {
     closeLightbox();
     closeDetailModal();
     closeCompareModal();
+    closeConfirm();
   }
 });
 
