@@ -602,7 +602,7 @@ async function loadBookings() {
 
   try {
     const res = await fetch(
-      `${SB_URL}/rest/v1/ticket_bookings?order=submitted_at.desc&limit=500`,
+      `${SB_URL}/rest/v1/ticket_bookings?order=created_at.desc&limit=500`,
       { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -715,6 +715,7 @@ function renderTable(rows) {
     const badgeClass = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected' }[status];
     const badgeIcon  = { pending:'⏳', approved:'✅', rejected:'❌' }[status] || '⏳';
     const date       = formatDate(b.submitted_at || b.created_at);
+    const name       = b.name || b.email?.split('@')[0] || '—';
     const screenshot = b.screenshot_url
       ? `<img class="screenshot-thumb" src="${esc(b.screenshot_url)}" alt="screenshot" onclick="openLightbox('${esc(b.screenshot_url)}')" onerror="this.style.display='none'">`
       : `<div class="no-screenshot" title="No screenshot">📷</div>`;
@@ -724,7 +725,7 @@ function renderTable(rows) {
     return `<tr class="row-${status}" data-id="${b.id}">
       <td>${screenshot}</td>
       <td><span class="cell-id" title="Click to copy" onclick="copyText('${b.booking_id||''}')" style="cursor:pointer">${b.booking_id||'—'}</span></td>
-      <td><span class="cell-name">${esc(b.name||'—')}</span></td>
+      <td><span class="cell-name">${esc(name)}</span></td>
       <td><span class="cell-email" title="${esc(b.email||'')}">${esc(b.email||'—')}</span></td>
       <td><span class="cell-phone">${esc(b.phone||'—')}</span></td>
       <td class="cell-qty">${b.quantity||1}</td>
@@ -761,10 +762,11 @@ function renderCards(rows) {
     const badgeClass = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected' }[status];
     const badgeIcon  = { pending:'⏳', approved:'✅', rejected:'❌' }[status] || '⏳';
     const actions    = buildActions(b, status);
+    const name    = b.name || b.email?.split('@')[0] || '—';
     return `<div class="booking-card card-${status}">
       <div class="card-row">
         <div>
-          <div class="card-name">${esc(b.name||'—')}</div>
+          <div class="card-name">${esc(name)}</div>
           <div style="font-size:.8rem;color:var(--subtle);margin-top:.15rem">${esc(b.email||'—')}</div>
         </div>
         <div class="card-amount">₹${b.total_amount||0}</div>
@@ -812,15 +814,15 @@ function openDetail(id) {
     <div class="detail-grid">
       <div class="detail-field"><div class="detail-label">Booking ID</div><div class="detail-value mono" onclick="copyText('${esc(b.booking_id||'')}')" style="cursor:pointer">${esc(b.booking_id||'—')} <span style="color:var(--muted);font-size:.75rem">⌘C</span></div></div>
       <div class="detail-field"><div class="detail-label">Status</div><div class="detail-value"><span class="status-badge ${badgeClass}">${cap(status)}</span></div></div>
-      <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${esc(b.name||'—')}</div></div>
+      <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${esc(b.name || b.email?.split('@')[0] || '—')}</div></div>
       <div class="detail-field"><div class="detail-label">Phone</div><div class="detail-value mono">${esc(b.phone||'—')}</div></div>
       <div class="detail-field full"><div class="detail-label">Email</div><div class="detail-value">${esc(b.email||'—')}</div></div>
       <div class="detail-field"><div class="detail-label">Tickets</div><div class="detail-value">${b.quantity||1}</div></div>
       <div class="detail-field"><div class="detail-label">Amount</div><div class="detail-value mono">₹${b.total_amount||0}</div></div>
-      <div class="detail-field full"><div class="detail-label">UPI Transaction ID</div><div class="detail-value mono" onclick="copyText('${esc(b.transaction_id||'')}')" style="cursor:pointer">${esc(b.transaction_id||'—')} <span style="color:var(--muted);font-size:.75rem">⌘C</span></div></div>
+      <div class="detail-field full"><div class="detail-label">UPI Transaction ID</div><div class="detail-value mono" onclick="copyText('${esc(b.transaction_id||b.utr_number||'')}')" style="cursor:pointer">${esc(b.transaction_id||b.utr_number||'—')} <span style="color:var(--muted);font-size:.75rem">⌘C</span></div></div>
       <div class="detail-field"><div class="detail-label">Submitted</div><div class="detail-value mono" style="font-size:.82rem">${formatDateFull(b.submitted_at||b.created_at)}</div></div>
       ${b.approved_at ? `<div class="detail-field"><div class="detail-label">Approved At</div><div class="detail-value mono" style="font-size:.82rem">${formatDateFull(b.approved_at)}</div></div>` : ''}
-      ${b.notes ? `<div class="detail-field full"><div class="detail-label">Admin Notes</div><div class="detail-value">${esc(b.notes)}</div></div>` : ''}
+      ${(b.notes||b.admin_note) ? `<div class="detail-field full"><div class="detail-label">Admin Notes</div><div class="detail-value">${esc(b.notes||b.admin_note)}</div></div>` : ''}
     </div>`;
 
   const footer = document.getElementById('detail-footer');
@@ -872,7 +874,7 @@ async function updateStatus(id, newStatus, notes) {
     status:          newStatus === 'approved' ? 'confirmed' : newStatus,
     approved_at:     newStatus === 'approved' ? new Date().toISOString() : null,
   };
-  if (notes !== null) body.notes = notes;
+  if (notes !== null) { body.notes = notes; body.admin_note = notes; }
 
   try {
     const res = await fetch(`${SB_URL}/rest/v1/ticket_bookings?id=eq.${id}`, {
@@ -911,11 +913,11 @@ function exportCSV() {
 
   const headers = ['Booking ID','Name','Email','Phone','Quantity','Amount','UTR/TxnID','Status','Submitted','Screenshot URL','Notes'];
   const csvRows = [headers, ...rows.map(b => [
-    b.booking_id||'', b.name||'', b.email||'', b.phone||'',
-    b.quantity||1, b.total_amount||0, b.transaction_id||'',
+    b.booking_id||'', b.name || b.email?.split('@')[0] || '', b.email||'', b.phone||'',
+    b.quantity||1, b.total_amount||0, b.transaction_id||b.utr_number||'',
     b.approval_status||'pending',
     formatDateFull(b.submitted_at||b.created_at),
-    b.screenshot_url||'', b.notes||''
+    b.screenshot_url||'', b.notes||b.admin_note||''
   ].map(v => `"${String(v).replace(/"/g,'""')}"`))];
 
   const csv  = csvRows.map(r => r.join(',')).join('\n');
