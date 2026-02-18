@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Admin Dashboard — Movie Time Festival 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:#050507; --ink:#0d0d12; --charcoal:#141419; --carbon:#1c1c24;
+  --graphite:#252530; --steel:#34343f; --iron:#4a4a58; --ash:#6b6b7e;
+  --silver:#a0a0b8; --mist:#c8c8dc; --ghost:#e8e8f0; --white:#f8f8ff;
+  --flame:#ff6b00; --amber:#ff8c42; --gold:#ffb347; --glow:rgba(255,107,0,.15);
+  --green:#00e676; --red:#ff1744; --yellow:#ffd600; --blue:#00b0ff;
+  --r:12px; --r-sm:8px;
+  --font: 'Syne', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font); background: var(--void); color: var(--ghost); min-height: 100vh; }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+@media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--ink);
+  border-right: 1px solid var(--graphite);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--graphite);
+}
+.sidebar-logo h2 { font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, var(--amber), var(--flame)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sidebar-logo p { font-size: 0.68rem; color: var(--ash); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+.sidebar-nav { padding: 1rem 0.75rem; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  color: var(--ash);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--carbon); color: var(--mist); }
+.nav-item.active { background: rgba(255,107,0,.12); color: var(--amber); border: 1px solid rgba(255,107,0,.2); }
+.nav-badge { margin-left: auto; background: var(--flame); color: #000; border-radius: 50px; padding: 2px 8px; font-size: 0.68rem; font-weight: 800; }
+.sidebar-footer { padding: 1rem; border-top: 1px solid var(--graphite); }
+
+/* ── MAIN ── */
+.admin-main { padding: 0; background: var(--void); overflow-x: hidden; }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--ink);
+  border-bottom: 1px solid var(--graphite);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar h1 { font-size: 1.1rem; font-weight: 700; color: var(--white); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.admin-badge { background: rgba(255,107,0,.15); border: 1px solid rgba(255,107,0,.3); border-radius: 50px; padding: 4px 14px; font-size: 0.72rem; font-weight: 700; color: var(--amber); }
+.logout-btn { background: transparent; border: 1px solid var(--steel); border-radius: var(--r-sm); padding: 6px 14px; color: var(--silver); font-size: 0.8rem; font-family: var(--font); cursor: pointer; font-weight: 600; }
+.logout-btn:hover { background: var(--graphite); }
+
+/* ── CONTENT ── */
+.content { padding: 1.5rem; }
+
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  position: fixed; inset: 0;
+  background: var(--void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1.5rem;
+}
+.login-box {
+  background: var(--carbon);
+  border: 1px solid var(--graphite);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.login-box h2 { font-size: 1.6rem; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+.login-box p { font-size: 0.82rem; color: var(--ash); margin-bottom: 1.75rem; }
+.login-field { margin-bottom: 1rem; text-align: left; }
+.login-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash); margin-bottom: 6px; display: block; }
+.login-input { width: 100%; background: var(--graphite); border: 2px solid var(--steel); border-radius: var(--r-sm); padding: 12px 14px; color: var(--white); font-family: var(--font); font-size: 0.9rem; }
+.login-input:focus { outline: none; border-color: var(--flame); }
+.login-btn { width: 100%; background: linear-gradient(135deg, var(--flame), #ff4500); color: #fff; border: none; border-radius: var(--r-sm); padding: 13px; font-family: var(--font); font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
+.login-btn:hover { opacity: 0.9; }
+.login-err { color: var(--red); font-size: 0.8rem; margin-top: 10px; }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card { background: var(--carbon); border: 1px solid var(--graphite); border-radius: var(--r); padding: 1.25rem; }
+.stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash); margin-bottom: 8px; }
+.stat-value { font-size: 2rem; font-weight: 800; }
+.stat-value.orange { color: var(--amber); }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-value.yellow { color: var(--yellow); }
+.stat-sub { font-size: 0.78rem; color: var(--ash); margin-top: 4px; }
+
+/* ── FILTERS ── */
+.filters { display: flex; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--steel);
+  background: transparent;
+  color: var(--ash);
+  transition: all 0.18s;
+}
+.filter-btn:hover { background: var(--graphite); color: var(--mist); }
+.filter-btn.active { background: rgba(255,107,0,.15); border-color: rgba(255,107,0,.4); color: var(--amber); }
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--carbon);
+  border: 1px solid var(--steel);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 0.85rem;
+}
+.search-input:focus { outline: none; border-color: var(--flame); }
+.refresh-btn { background: var(--graphite); border: 1px solid var(--steel); border-radius: var(--r-sm); padding: 8px 14px; color: var(--silver); font-family: var(--font); font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+.refresh-btn:hover { background: var(--steel); }
+
+/* ── BOOKING TABLE ── */
+.table-wrap { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--graphite); }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+thead { background: var(--charcoal); border-bottom: 1px solid var(--graphite); }
+th { padding: 12px 14px; text-align: left; font-weight: 700; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash); white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--graphite); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+td { padding: 14px; vertical-align: middle; }
+.mono { font-family: var(--mono); font-size: 0.78rem; }
+.name-cell { font-weight: 600; color: var(--white); }
+.email-cell { color: var(--silver); }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.pill-pending  { background: rgba(255,214,0,.1);  color: var(--yellow); border: 1px solid rgba(255,214,0,.25); }
+.pill-approved { background: rgba(0,230,118,.1); color: var(--green);  border: 1px solid rgba(0,230,118,.25); }
+.pill-rejected { background: rgba(255,23,68,.1);  color: var(--red);   border: 1px solid rgba(255,23,68,.25); }
+
+.action-wrap { display: flex; gap: 6px; }
+.action-btn { padding: 5px 12px; border-radius: 6px; font-family: var(--font); font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.18s; }
+.approve-btn { background: rgba(0,230,118,.15); color: var(--green); border: 1px solid rgba(0,230,118,.3); }
+.approve-btn:hover { background: rgba(0,230,118,.25); }
+.reject-btn  { background: rgba(255,23,68,.12); color: var(--red);   border: 1px solid rgba(255,23,68,.25); }
+.reject-btn:hover  { background: rgba(255,23,68,.22); }
+.view-btn    { background: var(--graphite); color: var(--silver); border: 1px solid var(--steel); }
+.view-btn:hover    { background: var(--steel); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--carbon);
+  border: 1px solid var(--graphite);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-head { padding: 1.5rem; border-bottom: 1px solid var(--graphite); display: flex; align-items: center; justify-content: space-between; }
+.modal-head h3 { font-size: 1.1rem; font-weight: 700; }
+.modal-close { background: var(--graphite); border: none; color: var(--silver); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--steel); }
+.modal-body { padding: 1.5rem; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.detail-item label { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash); margin-bottom: 4px; }
+.detail-item span { font-size: 0.88rem; color: var(--white); word-break: break-all; }
+.detail-item.wide { grid-column: 1 / -1; }
+.screenshot-img { width: 100%; border-radius: var(--r-sm); margin-top: 1rem; cursor: pointer; border: 1px solid var(--steel); }
+.screenshot-img:hover { border-color: var(--flame); }
+.modal-actions { padding: 1rem 1.5rem; border-top: 1px solid var(--graphite); display: flex; gap: 10px; }
+.modal-actions .action-btn { flex: 1; padding: 12px; font-size: 0.85rem; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 3rem 1rem; color: var(--ash); }
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-text { font-size: 0.9rem; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--green); color: #000; padding: 8px 20px; border-radius: 50px;
+  font-size: 0.82rem; font-weight: 700; z-index: 9999; opacity: 0; transition: all 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--red); color: #fff; }
+
+/* ── LOADING ── */
+.loading { text-align: center; padding: 2rem; color: var(--ash); font-size: 0.88rem; }
+.spin { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--steel); border-top-color: var(--flame); border-radius: 50%; animation: rotate 0.65s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes rotate { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:.75rem;">🎬</div>
+    <h2>Admin Login</h2>
+    <p>Movie Time Festival 2026 — Admin Dashboard</p>
+    <div class="login-field">
+      <label class="login-label">Email</label>
+      <input type="email" id="login-email" class="login-input" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input type="password" id="login-pass" class="login-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-err hidden" id="login-err"></div>
+    <p style="margin-top:1.25rem;font-size:.72rem;color:var(--iron);">Supabase authenticated admin only</p>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until logged in) -->
+<div class="layout hidden" id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>🎬 MOVIE TIME</h2>
+      <p>Admin Dashboard · 2026</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="setView('bookings')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        All Bookings
+        <span class="nav-badge" id="pending-count">0</span>
+      </div>
+      <div class="nav-item" onclick="setView('approved')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Approved
+      </div>
+      <div class="nav-item" onclick="setView('rejected')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Rejected
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="font-size:.72rem;color:var(--iron);">Logged in as</div>
+      <div style="font-size:.82rem;color:var(--silver);margin-top:2px;" id="admin-email-display">—</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <h1 id="view-title">All Bookings</h1>
+      <div class="topbar-right">
+        <span class="admin-badge">Admin</span>
+        <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <!-- STATS -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value orange" id="st-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow" id="st-pending">—</div></div>
+        <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value green" id="st-approved">—</div></div>
+        <div class="stat-card"><div class="stat-label">Rejected</div><div class="stat-value red" id="st-rejected">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Tickets</div><div class="stat-value orange" id="st-tickets">—</div></div>
+        <div class="stat-card"><div class="stat-label">Revenue (₹)</div><div class="stat-value green" id="st-revenue">—</div></div>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filters">
+        <button class="filter-btn active" id="fb-all"      onclick="setFilter('all')">All</button>
+        <button class="filter-btn"         id="fb-pending"  onclick="setFilter('pending')">⏳ Pending</button>
+        <button class="filter-btn"         id="fb-approved" onclick="setFilter('approved')">✅ Approved</button>
+        <button class="filter-btn"         id="fb-rejected" onclick="setFilter('rejected')">❌ Rejected</button>
+        <input type="text" class="search-input" id="search-inp" placeholder="Search name, email, booking ID…" oninput="applySearch(this.value)">
+        <button class="refresh-btn" onclick="loadBookings()">↻ Refresh</button>
+      </div>
+
+      <!-- TABLE -->
+      <div id="table-area">
+        <div class="loading"><span class="spin"></span> Loading bookings…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING DETAIL MODAL -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Booking Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid" id="modal-details"></div>
+      <img class="screenshot-img hidden" id="modal-screenshot" onclick="window.open(this.src)" title="Click to open full size">
+    </div>
+    <div class="modal-actions">
+      <button class="action-btn approve-btn" id="modal-approve" onclick="modalAction('approved')">✅ Approve</button>
+      <button class="action-btn reject-btn"  id="modal-reject"  onclick="modalAction('rejected')">❌ Reject</button>
+      <button class="action-btn view-btn"    onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
+const SB_URL = 'https://vjxidlnggrpbttxmrfch.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqeGlkbG5nZ3JwYnR0eG1yZmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjQ2MzYsImV4cCI6MjA4NzAwMDYzNn0.G7OXaE8hi-1ELJAmw_-gLi658henIj2NjIBqFd3HWWo';
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let allBookings   = [];
+let filteredBkgs  = [];
+let curFilter     = 'all';
+let curSearch     = '';
+let authToken     = null;
+let modalBooking  = null;
+let curView       = 'bookings';
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  errEl.classList.add('hidden');
+
+  if (!email || !pass) { showLoginErr('Please enter email and password.'); return; }
+
+  try {
+    const res = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) { showLoginErr(data.error_description || data.msg || 'Invalid credentials.'); return; }
+
+    authToken = data.access_token;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('admin-email-display').textContent = email;
+    loadBookings();
+
+  } catch {
+    showLoginErr('Network error. Please try again.');
+  }
+}
+function showLoginErr(msg) {
+  const el = document.getElementById('login-err');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function doLogout() {
+  authToken = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+document.getElementById('login-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+// ═══════════════════════════════════════════════
+//  LOAD BOOKINGS
+// ═══════════════════════════════════════════════
+async function loadBookings() {
+  document.getElementById('table-area').innerHTML = '<div class="loading"><span class="spin"></span> Loading bookings…</div>';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ticket_bookings?select=*&order=submitted_at.desc`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + (authToken || SB_KEY) }
+    });
+    if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+    allBookings = await res.json();
+    updateStats();
+    applyFilters();
+  } catch (e) {
+    document.getElementById('table-area').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">${e.message}</div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════
+function updateStats() {
+  const total    = allBookings.length;
+  const pending  = allBookings.filter(b => b.approval_status === 'pending').length;
+  const approved = allBookings.filter(b => b.approval_status === 'approved').length;
+  const rejected = allBookings.filter(b => b.approval_status === 'rejected').length;
+  const tickets  = allBookings.reduce((s, b) => s + (b.quantity || 0), 0);
+  const revenue  = allBookings.filter(b => b.approval_status === 'approved').reduce((s,b) => s + (b.total_amount||0), 0);
+
+  document.getElementById('st-total').textContent    = total;
+  document.getElementById('st-pending').textContent  = pending;
+  document.getElementById('st-approved').textContent = approved;
+  document.getElementById('st-rejected').textContent = rejected;
+  document.getElementById('st-tickets').textContent  = tickets;
+  document.getElementById('st-revenue').textContent  = '₹' + revenue;
+  document.getElementById('pending-count').textContent = pending;
+}
+
+// ═══════════════════════════════════════════════
+//  FILTER & SEARCH
+// ═══════════════════════════════════════════════
+function setFilter(f) {
+  curFilter = f;
+  ['all','pending','approved','rejected'].forEach(x => {
+    document.getElementById('fb-' + x)?.classList.toggle('active', x === f);
+  });
+  applyFilters();
+}
+
+function applySearch(val) {
+  curSearch = val.toLowerCase();
+  applyFilters();
+}
+
+function applyFilters() {
+  filteredBkgs = allBookings.filter(b => {
+    if (curFilter !== 'all' && b.approval_status !== curFilter) return false;
+    if (curSearch) {
+      const haystack = [b.name, b.email, b.booking_id, b.transaction_id, b.phone].join(' ').toLowerCase();
+      if (!haystack.includes(curSearch)) return false;
+    }
+    return true;
+  });
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER TABLE
+// ═══════════════════════════════════════════════
+function renderTable() {
+  const area = document.getElementById('table-area');
+  if (!filteredBkgs.length) {
+    area.innerHTML = '<div class="empty"><div class="empty-icon">🎟️</div><div class="empty-text">No bookings found.</div></div>';
+    return;
+  }
+  area.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Booking ID</th><th>Name</th><th>Email</th>
+          <th>Phone</th><th>Qty</th><th>Amount</th><th>UTR</th>
+          <th>Submitted</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${filteredBkgs.map((b, i) => rowHTML(b, i + 1)).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function statusPill(s) {
+  const cls  = { pending:'pill-pending', approved:'pill-approved', rejected:'pill-rejected' };
+  const icon = { pending:'⏳', approved:'✅', rejected:'❌' };
+  return `<span class="status-pill ${cls[s] || 'pill-pending'}">${icon[s]||''} ${s||'pending'}</span>`;
+}
+
+function rowHTML(b, i) {
+  const dt = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN', { dateStyle:'short', timeStyle:'short' }) : '—';
+  const isPending = b.approval_status === 'pending';
+  return `<tr>
+    <td style="color:var(--ash)">${i}</td>
+    <td><span class="mono">${b.booking_id || '—'}</span></td>
+    <td class="name-cell">${escHtml(b.name || '—')}</td>
+    <td class="email-cell">${escHtml(b.email || '—')}</td>
+    <td class="mono">${b.phone || '—'}</td>
+    <td style="text-align:center;font-weight:700;">${b.quantity || '—'}</td>
+    <td style="color:var(--amber);font-weight:700;">₹${b.total_amount || '—'}</td>
+    <td><span class="mono">${b.transaction_id || '—'}</span></td>
+    <td style="color:var(--ash);font-size:.76rem;">${dt}</td>
+    <td>${statusPill(b.approval_status)}</td>
+    <td>
+      <div class="action-wrap">
+        <button class="action-btn view-btn" onclick="openModal('${b.id}')">👁️</button>
+        ${isPending ? `
+          <button class="action-btn approve-btn" onclick="updateStatus('${b.id}','approved')">✅</button>
+          <button class="action-btn reject-btn"  onclick="updateStatus('${b.id}','rejected')">❌</button>
+        ` : ''}
+      </div>
+    </td>
+  </tr>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════
+function openModal(id) {
+  const b = allBookings.find(x => x.id === id);
+  if (!b) return;
+  modalBooking = b;
+
+  document.getElementById('modal-title').textContent = 'Booking — ' + (b.booking_id || id);
+
+  const fields = [
+    ['Name', b.name], ['Email', b.email],
+    ['Phone', b.phone], ['Booking ID', b.booking_id],
+    ['Tickets', b.quantity + ' × ₹100'], ['Total', '₹' + b.total_amount],
+    ['Event', b.event_name], ['Date & Time', `${b.event_date} · ${b.event_time}`],
+    ['Venue', b.venue], ['UTR / Transaction ID', b.transaction_id],
+    ['Status', b.approval_status], ['Submitted', b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN') : '—'],
+  ];
+
+  document.getElementById('modal-details').innerHTML = fields.map(([lbl, val], idx) => `
+    <div class="detail-item ${idx >= fields.length - 2 ? 'wide' : ''}">
+      <label>${lbl}</label>
+      <span>${escHtml(String(val||'—'))}</span>
+    </div>
+  `).join('');
+
+  const img = document.getElementById('modal-screenshot');
+  if (b.screenshot_url) {
+    img.src = b.screenshot_url;
+    img.classList.remove('hidden');
+  } else {
+    img.classList.add('hidden');
+  }
+
+  const isPending = b.approval_status === 'pending';
+  document.getElementById('modal-approve').style.display = isPending ? '' : 'none';
+  document.getElementById('modal-reject').style.display  = isPending ? '' : 'none';
+
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+  modalBooking = null;
+}
+
+async function modalAction(status) {
+  if (!modalBooking) return;
+  closeModal();
+  await updateStatus(modalBooking.id, status);
+}
+
+// ═══════════════════════════════════════════════
+//  UPDATE STATUS
+// ═══════════════════════════════════════════════
+async function updateStatus(id, status) {
+  const token = authToken || SB_KEY;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ticket_bookings?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify({
+        approval_status: status,
+        approved_at:     new Date().toISOString(),
+        approved_by:     document.getElementById('admin-email-display').textContent,
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      showToast('Update failed: ' + t, true);
+      return;
+    }
+    // Update local state
+    const idx = allBookings.findIndex(b => b.id === id);
+    if (idx !== -1) {
+      allBookings[idx].approval_status = status;
+      allBookings[idx].approved_at = new Date().toISOString();
+    }
+    updateStats();
+    applyFilters();
+    showToast(status === 'approved' ? '✅ Booking approved!' : '❌ Booking rejected.');
+  } catch (e) {
+    showToast('Network error: ' + e.message, true);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  VIEW NAVIGATION
+// ═══════════════════════════════════════════════
+function setView(v) {
+  curView = v;
+  document.getElementById('view-title').textContent = { bookings:'All Bookings', approved:'Approved', rejected:'Rejected' }[v] || v;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.target.closest('.nav-item')?.classList.add('active');
+  if (v !== 'bookings') setFilter(v);
+  else setFilter('all');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg, isErr) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isErr ? ' error' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// Auto-refresh every 60 seconds
+setInterval(() => { if (authToken) loadBookings(); }, 60_000);
+</script>
+</body>
+</html>
