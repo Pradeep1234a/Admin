@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Time — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --orange:#f97316; --orange-dark:#ea580c; --orange-dim:rgba(249,115,22,.12);
+      --bg:#070709; --surface:#111114; --surface2:#1c1c21; --surface3:#252529;
+      --border:#2e2e34; --border2:#3a3a42;
+      --muted:#5c5c6b; --subtle:#8888a0; --text:#c8c8d8; --white:#f0f0f8;
+      --green:#22c55e; --green-dim:rgba(34,197,94,.12);
+      --red:#ef4444; --red-dim:rgba(239,68,68,.1);
+      --yellow:#f59e0b; --yellow-dim:rgba(245,158,11,.1);
+      --blue:#3b82f6; --blue-dim:rgba(59,130,246,.1);
+      --radius:.75rem; --radius-sm:.45rem; --radius-xs:.3rem;
+      --mono:'JetBrains Mono', monospace;
+      --sans:'Outfit', sans-serif;
+      --display:'Bebas Neue', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:var(--sans); background:var(--bg); color:var(--white); min-height:100vh; -webkit-font-smoothing:antialiased; }
+
+    /* ── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px; }
+
+    /* ══════════════════════════════════════════
+       LOGIN SCREEN
+    ══════════════════════════════════════════ */
+    .login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; background:radial-gradient(ellipse 60% 40% at 50% 0%, rgba(249,115,22,.08), transparent); }
+    .login-box { background:var(--surface); border:1px solid var(--border2); border-radius:calc(var(--radius)*1.5); padding:2.75rem 2.25rem; width:100%; max-width:380px; }
+    .login-logo { display:flex; align-items:center; gap:.6rem; margin-bottom:1.75rem; }
+    .login-logo-icon { width:36px; height:36px; background:var(--orange); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .login-logo-text { font-family:var(--display); font-size:1.5rem; color:var(--orange); letter-spacing:.05em; }
+    .login-heading { font-size:1.9rem; font-weight:800; margin-bottom:.35rem; }
+    .login-sub { color:var(--subtle); font-size:.9rem; margin-bottom:2rem; }
+    .form-group { margin-bottom:1rem; }
+    .form-label { display:block; font-size:.82rem; font-weight:600; color:var(--subtle); letter-spacing:.06em; text-transform:uppercase; margin-bottom:.5rem; }
+    .form-input { width:100%; background:var(--surface2); border:1.5px solid var(--border2); border-radius:var(--radius-sm); padding:.8rem 1rem; color:var(--white); font-family:var(--sans); font-size:.95rem; transition:border-color .2s; }
+    .form-input:focus { outline:none; border-color:var(--orange); }
+    .form-input.error { border-color:var(--red); }
+    .form-input::placeholder { color:var(--muted); }
+    .login-btn { width:100%; padding:.9rem; background:linear-gradient(135deg,var(--orange),var(--orange-dark)); border:none; border-radius:var(--radius-sm); color:#000; font-family:var(--display); font-size:1.35rem; letter-spacing:.06em; cursor:pointer; transition:opacity .2s; margin-top:.5rem; }
+    .login-btn:hover { opacity:.88; }
+    .login-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .login-error { display:none; align-items:center; gap:.5rem; background:var(--red-dim); border:1px solid rgba(239,68,68,.3); border-radius:var(--radius-sm); padding:.65rem .9rem; color:#fca5a5; font-size:.85rem; margin-top:.75rem; }
+    .login-error.show { display:flex; }
+    .login-attempts { margin-top:.75rem; text-align:center; font-size:.78rem; color:var(--muted); }
+
+    /* ══════════════════════════════════════════
+       APP SHELL
+    ══════════════════════════════════════════ */
+    .app { display:none; min-height:100vh; flex-direction:column; }
+    .app.active { display:flex; }
+
+    /* ── TOPBAR ── */
+    .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:.9rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:200; gap:1rem; }
+    .topbar-left { display:flex; align-items:center; gap:.75rem; min-width:0; }
+    .topbar-logo { display:flex; align-items:center; gap:.5rem; flex-shrink:0; }
+    .topbar-logo-icon { width:28px; height:28px; background:var(--orange); border-radius:.4rem; display:flex; align-items:center; justify-content:center; font-size:.85rem; }
+    .topbar-title { font-family:var(--display); font-size:1.3rem; color:var(--orange); letter-spacing:.05em; white-space:nowrap; }
+    .topbar-divider { width:1px; height:20px; background:var(--border2); flex-shrink:0; }
+    .pending-badge { display:inline-flex; align-items:center; gap:.4rem; background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.3); color:#fde047; border-radius:2rem; padding:.25rem .75rem; font-size:.78rem; font-weight:700; white-space:nowrap; }
+    .pending-badge .badge-dot { width:6px; height:6px; background:#fde047; border-radius:50%; animation:pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .topbar-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+    .auto-refresh-indicator { display:flex; align-items:center; gap:.4rem; font-size:.78rem; color:var(--muted); }
+    .refresh-ring { width:14px; height:14px; border:1.5px solid var(--border2); border-top-color:var(--orange); border-radius:50%; }
+    .refresh-ring.spinning { animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .icon-btn { width:34px; height:34px; border-radius:var(--radius-sm); background:var(--surface2); border:1px solid var(--border2); color:var(--subtle); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0; }
+    .icon-btn:hover { background:var(--surface3); color:var(--white); border-color:var(--border2); }
+    .logout-btn { padding:.45rem .9rem; border-radius:var(--radius-sm); background:var(--surface2); border:1px solid var(--border2); color:var(--subtle); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .logout-btn:hover { border-color:var(--red); color:var(--red); }
+    .session-timer { font-size:.75rem; color:var(--muted); font-family:var(--mono); white-space:nowrap; }
+
+    /* ── STATS ── */
+    .stats-bar { display:grid; grid-template-columns:repeat(5,1fr); gap:.75rem; padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; cursor:pointer; transition:border-color .2s; }
+    .stat-card:hover { border-color:var(--border2); }
+    .stat-card.clickable.active-filter { border-color:var(--orange); background:var(--orange-dim); }
+    .stat-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:.5rem; }
+    .stat-icon { font-size:1.1rem; }
+    .stat-trend { font-size:.72rem; font-weight:700; padding:.1rem .4rem; border-radius:99px; }
+    .stat-num { font-size:1.75rem; font-weight:800; line-height:1; margin-bottom:.2rem; }
+    .stat-label { font-size:.75rem; color:var(--muted); font-weight:500; }
+    .stat-pending .stat-num { color:var(--yellow); }
+    .stat-approved .stat-num { color:var(--green); }
+    .stat-rejected .stat-num { color:var(--red); }
+    .stat-revenue .stat-num { color:var(--orange); }
+    .stat-tickets .stat-num { color:var(--blue); }
+
+    /* ── FILTERS & SEARCH ── */
+    .toolbar { padding:.9rem 1.5rem; display:flex; gap:.65rem; flex-wrap:wrap; align-items:center; border-bottom:1px solid var(--border); }
+    .filter-pill { padding:.4rem 1rem; border-radius:2rem; border:1.5px solid var(--border); background:var(--surface2); color:var(--subtle); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .18s; white-space:nowrap; }
+    .filter-pill:hover { border-color:var(--border2); color:var(--text); }
+    .filter-pill.active { border-color:var(--orange); background:var(--orange-dim); color:var(--orange); }
+    .search-wrap { flex:1; min-width:200px; position:relative; }
+    .search-icon { position:absolute; left:.75rem; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+    .search-input { width:100%; background:var(--surface2); border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:.5rem .75rem .5rem 2.25rem; color:var(--white); font-size:.88rem; font-family:var(--sans); transition:border-color .2s; }
+    .search-input:focus { outline:none; border-color:var(--orange); }
+    .search-input::placeholder { color:var(--muted); }
+    .toolbar-actions { display:flex; gap:.5rem; margin-left:auto; }
+    .tool-btn { display:flex; align-items:center; gap:.4rem; padding:.45rem .85rem; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:var(--surface2); color:var(--subtle); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .tool-btn:hover { border-color:var(--border2); color:var(--text); }
+    .tool-btn.primary { border-color:rgba(249,115,22,.4); color:var(--orange); background:var(--orange-dim); }
+    .tool-btn.primary:hover { background:rgba(249,115,22,.18); }
+
+    /* ── TABLE / CARDS ── */
+    .content-area { flex:1; overflow:hidden; }
+    .table-wrap { overflow-x:auto; padding:0 1.5rem 1.5rem; }
+    .bookings-table { width:100%; border-collapse:collapse; font-size:.855rem; }
+    .bookings-table th { text-align:left; padding:.7rem 1rem; color:var(--muted); font-weight:600; font-size:.73rem; text-transform:uppercase; letter-spacing:.09em; border-bottom:1px solid var(--border); white-space:nowrap; background:var(--surface); position:sticky; top:0; z-index:10; }
+    .bookings-table th:first-child { border-radius:var(--radius-sm) 0 0 0; }
+    .bookings-table th:last-child { border-radius:0 var(--radius-sm) 0 0; }
+    .bookings-table td { padding:.8rem 1rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .bookings-table tr:last-child td { border-bottom:none; }
+    .bookings-table tbody tr { transition:background .1s; }
+    .bookings-table tbody tr:hover td { background:rgba(255,255,255,.018); }
+    .bookings-table tbody tr.row-approved td { border-left:2px solid var(--green); }
+    .bookings-table tbody tr.row-rejected td { border-left:2px solid var(--red); }
+    .bookings-table tbody tr.row-pending td { border-left:2px solid var(--yellow); }
+
+    /* cell types */
+    .cell-id { font-family:var(--mono); font-size:.78rem; color:var(--muted); }
+    .cell-name { font-weight:600; color:var(--white); }
+    .cell-email { color:var(--text); font-size:.83rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .cell-phone { font-family:var(--mono); font-size:.8rem; color:var(--subtle); }
+    .cell-qty { font-weight:800; color:var(--orange); text-align:center; font-size:1rem; }
+    .cell-amount { font-weight:700; color:var(--white); font-family:var(--mono); }
+    .cell-date { color:var(--muted); font-size:.78rem; white-space:nowrap; font-family:var(--mono); }
+    .mono-chip { font-family:var(--mono); font-size:.78rem; color:var(--text); background:var(--surface3); padding:.2rem .5rem; border-radius:var(--radius-xs); display:inline-flex; align-items:center; gap:.35rem; max-width:160px; overflow:hidden; }
+    .mono-chip span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .copy-icon { cursor:pointer; color:var(--muted); transition:color .15s; flex-shrink:0; }
+    .copy-icon:hover { color:var(--orange); }
+
+    /* status badge */
+    .status-badge { display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .7rem; border-radius:2rem; font-size:.75rem; font-weight:700; white-space:nowrap; }
+    .badge-pending  { background:var(--yellow-dim); color:#fde047; border:1px solid rgba(245,158,11,.3); }
+    .badge-approved { background:var(--green-dim); color:#86efac; border:1px solid rgba(34,197,94,.3); }
+    .badge-rejected { background:var(--red-dim); color:#fca5a5; border:1px solid rgba(239,68,68,.3); }
+
+    /* action buttons */
+    .action-wrap { display:flex; gap:.35rem; align-items:center; }
+    .act-btn { padding:.35rem .75rem; border-radius:var(--radius-xs); border:1px solid; font-size:.78rem; font-weight:700; cursor:pointer; transition:all .15s; white-space:nowrap; display:inline-flex; align-items:center; gap:.3rem; }
+    .act-approve { background:var(--green-dim); color:var(--green); border-color:rgba(34,197,94,.3); }
+    .act-approve:hover { background:var(--green); color:#000; border-color:var(--green); }
+    .act-reject { background:var(--red-dim); color:var(--red); border-color:rgba(239,68,68,.3); }
+    .act-reject:hover { background:var(--red); color:#fff; border-color:var(--red); }
+    .act-undo { background:var(--surface3); color:var(--subtle); border-color:var(--border2); }
+    .act-undo:hover { color:var(--text); border-color:var(--border2); }
+    .act-view { background:var(--blue-dim); color:var(--blue); border-color:rgba(59,130,246,.3); }
+    .act-view:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+    /* screenshot thumb */
+    .screenshot-thumb { width:36px; height:36px; border-radius:var(--radius-xs); object-fit:cover; border:1px solid var(--border2); cursor:pointer; transition:transform .15s; }
+    .screenshot-thumb:hover { transform:scale(1.1); }
+    .no-screenshot { width:36px; height:36px; border-radius:var(--radius-xs); background:var(--surface3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.75rem; }
+
+    /* empty / loading */
+    .state-row td { text-align:center; padding:3.5rem 1rem; }
+    .state-icon { font-size:2.5rem; margin-bottom:.75rem; }
+    .state-msg { color:var(--muted); font-size:.9rem; }
+
+    /* ══════════════════════════════════════════
+       MODALS
+    ══════════════════════════════════════════ */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(4px); z-index:500; display:none; align-items:center; justify-content:center; padding:1rem; }
+    .modal-backdrop.open { display:flex; animation:fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal { background:var(--surface); border:1px solid var(--border2); border-radius:calc(var(--radius)*1.25); width:100%; max-width:600px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; animation:slideUp .25s ease; }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .modal-title { font-weight:700; font-size:1rem; display:flex; align-items:center; gap:.5rem; }
+    .modal-close { width:30px; height:30px; border-radius:var(--radius-xs); background:var(--surface2); border:1px solid var(--border); color:var(--subtle); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .modal-close:hover { background:var(--red-dim); color:var(--red); border-color:rgba(239,68,68,.3); }
+    .modal-body { padding:1.5rem; overflow-y:auto; flex:1; }
+    .modal-footer { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:.75rem; justify-content:flex-end; flex-shrink:0; }
+
+    /* detail modal */
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+    .detail-field { background:var(--surface2); border-radius:var(--radius-sm); padding:.85rem 1rem; }
+    .detail-field.full { grid-column:1/-1; }
+    .detail-label { font-size:.72rem; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+    .detail-value { font-size:.92rem; color:var(--white); font-weight:600; word-break:break-all; }
+    .detail-value.mono { font-family:var(--mono); font-size:.85rem; }
+    .screenshot-modal-img { width:100%; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:1rem; cursor:zoom-in; }
+    .no-screenshot-modal { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:2rem; text-align:center; color:var(--muted); margin-bottom:1rem; }
+
+    /* reject reason modal */
+    .reject-textarea { width:100%; background:var(--surface2); border:1.5px solid var(--border2); border-radius:var(--radius-sm); padding:.85rem 1rem; color:var(--white); font-family:var(--sans); font-size:.9rem; resize:vertical; min-height:90px; transition:border-color .2s; }
+    .reject-textarea:focus { outline:none; border-color:var(--red); }
+    .reject-reasons { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
+    .reason-chip { padding:.35rem .75rem; border-radius:2rem; border:1px solid var(--border2); background:var(--surface2); color:var(--subtle); font-size:.8rem; cursor:pointer; transition:all .15s; }
+    .reason-chip:hover { border-color:var(--red); color:var(--red); }
+
+    /* screenshot lightbox */
+    .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; cursor:zoom-out; }
+    .lightbox.open { display:flex; }
+    .lightbox img { max-width:100%; max-height:90vh; object-fit:contain; border-radius:var(--radius-sm); }
+
+    /* ── TOAST ── */
+    .toast-stack { position:fixed; bottom:1.5rem; right:1.5rem; display:flex; flex-direction:column; gap:.5rem; z-index:9999; }
+    .toast { padding:.75rem 1.25rem; border-radius:var(--radius-sm); font-size:.875rem; font-weight:600; animation:toastIn .25s ease; display:flex; align-items:center; gap:.6rem; box-shadow:0 4px 24px rgba(0,0,0,.5); min-width:220px; max-width:320px; }
+    .toast-success { background:var(--green); color:#000; }
+    .toast-error   { background:var(--red); color:#fff; }
+    .toast-info    { background:var(--surface3); color:var(--white); border:1px solid var(--border2); }
+    @keyframes toastIn { from{opacity:0;transform:translateX(12px)} to{opacity:1;transform:translateX(0)} }
+    .toast-exit { animation:toastOut .25s ease forwards; }
+    @keyframes toastOut { to{opacity:0;transform:translateX(12px)} }
+
+    /* ── EXPORT BADGE ── */
+    .results-bar { padding:.6rem 1.5rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+    .results-count { font-size:.82rem; color:var(--muted); }
+    .results-count strong { color:var(--text); }
+
+    /* ── SESSION LOCK ── */
+    .session-lock { position:fixed; inset:0; background:rgba(7,7,9,.96); z-index:999; display:none; align-items:center; justify-content:center; }
+    .session-lock.show { display:flex; }
+    .session-lock-box { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); padding:2rem; text-align:center; max-width:320px; }
+    .session-lock-box h3 { font-size:1.4rem; margin-bottom:.5rem; color:var(--red); }
+    .session-lock-box p { color:var(--subtle); font-size:.88rem; margin-bottom:1.25rem; }
+
+    /* ── MOBILE CARD VIEW ── */
+    .booking-cards { display:none; padding:.75rem; gap:.75rem; flex-direction:column; }
+    .booking-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; }
+    .booking-card.card-approved { border-left:3px solid var(--green); }
+    .booking-card.card-rejected { border-left:3px solid var(--red); }
+    .booking-card.card-pending  { border-left:3px solid var(--yellow); }
+    .card-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.65rem; }
+    .card-name { font-weight:700; font-size:.95rem; }
+    .card-amount { font-weight:800; color:var(--orange); font-family:var(--mono); }
+    .card-meta { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.75rem; }
+    .card-chip { font-size:.75rem; color:var(--subtle); background:var(--surface2); padding:.2rem .55rem; border-radius:99px; }
+    .card-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    @media (max-width:768px) {
+      .stats-bar { grid-template-columns:repeat(2,1fr); gap:.6rem; padding:1rem; }
+      .stat-tickets { display:none; }
+      .topbar { padding:.75rem 1rem; }
+      .topbar-divider, .session-timer, .auto-refresh-indicator { display:none; }
+      .toolbar { padding:.75rem 1rem; }
+      .table-wrap { display:none; }
+      .booking-cards { display:flex; }
+      .results-bar { padding:.5rem 1rem; }
+      .toolbar-actions .tool-btn span { display:none; }
+      .modal { max-width:100%; margin:.5rem; }
+      .detail-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:480px) {
+      .stats-bar { grid-template-columns:repeat(2,1fr); }
+      .stat-revenue { grid-column:1/-1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="login-wrap" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🎬</div>
+      <span class="login-logo-text">MOVIE TIME</span>
+    </div>
+    <h1 class="login-heading">Admin Login</h1>
+    <p class="login-sub">Festival Operations Dashboard · 2026</p>
+    <div class="form-group">
+      <label class="form-label" for="pwd-input">Password</label>
+      <input type="password" id="pwd-input" class="form-input" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">ENTER DASHBOARD →</button>
+    <div class="login-error" id="login-error">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span id="login-error-msg">Incorrect password. Please try again.</span>
+    </div>
+    <p class="login-attempts" id="attempts-msg"></p>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app" id="admin-app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <div class="topbar-logo-icon">🎬</div>
+        <span class="topbar-title">ADMIN</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span class="pending-badge" id="pending-badge">
+        <span class="badge-dot"></span>
+        <span id="pending-count-text">0 pending</span>
+      </span>
+    </div>
+    <div class="topbar-right">
+      <div class="auto-refresh-indicator">
+        <div class="refresh-ring" id="refresh-ring"></div>
+        <span id="refresh-countdown" class="session-timer">30s</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span class="session-timer" id="session-timer">Session: 30:00</span>
+      <button class="icon-btn" onclick="loadBookings()" title="Refresh now">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+      </button>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-card stat-pending clickable" onclick="clickStatFilter('pending',this)" title="Click to filter">
+      <div class="stat-top"><span class="stat-icon">⏳</span></div>
+      <div class="stat-num" id="s-pending">0</div>
+      <div class="stat-label">Pending Review</div>
+    </div>
+    <div class="stat-card stat-approved clickable" onclick="clickStatFilter('approved',this)" title="Click to filter">
+      <div class="stat-top"><span class="stat-icon">✅</span></div>
+      <div class="stat-num" id="s-approved">0</div>
+      <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-card stat-rejected clickable" onclick="clickStatFilter('rejected',this)" title="Click to filter">
+      <div class="stat-top"><span class="stat-icon">❌</span></div>
+      <div class="stat-num" id="s-rejected">0</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+    <div class="stat-card stat-tickets">
+      <div class="stat-top"><span class="stat-icon">🎟️</span></div>
+      <div class="stat-num" id="s-tickets">0</div>
+      <div class="stat-label">Total Tickets</div>
+    </div>
+    <div class="stat-card stat-revenue">
+      <div class="stat-top"><span class="stat-icon">💰</span></div>
+      <div class="stat-num" id="s-revenue">₹0</div>
+      <div class="stat-label">Confirmed Revenue</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <button class="filter-pill active" id="pill-all"      onclick="setFilter('all',this)">All</button>
+    <button class="filter-pill"        id="pill-pending"  onclick="setFilter('pending',this)">⏳ Pending</button>
+    <button class="filter-pill"        id="pill-approved" onclick="setFilter('approved',this)">✅ Approved</button>
+    <button class="filter-pill"        id="pill-rejected" onclick="setFilter('rejected',this)">❌ Rejected</button>
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" class="search-input" id="search-input" placeholder="Search name · email · booking ID · UTR..." oninput="renderAll()">
+    </div>
+    <div class="toolbar-actions">
+      <button class="tool-btn" onclick="exportCSV()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Export CSV</span>
+      </button>
+      <button class="tool-btn primary" onclick="loadBookings()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+        <span>Refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS COUNT -->
+  <div class="results-bar">
+    <span class="results-count" id="results-count">Loading...</span>
+  </div>
+
+  <!-- DESKTOP TABLE -->
+  <div class="table-wrap">
+    <table class="bookings-table">
+      <thead>
+        <tr>
+          <th>Screenshot</th>
+          <th>Booking ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th style="text-align:center">Qty</th>
+          <th>Amount</th>
+          <th>UTR / Txn ID</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="bookings-tbody">
+        <tr class="state-row"><td colspan="11"><div class="state-icon">⏳</div><div class="state-msg">Loading bookings...</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MOBILE CARDS -->
+  <div class="booking-cards" id="booking-cards"></div>
+
+</div><!-- /app -->
+
+<!-- ══ DETAIL MODAL ══ -->
+<div class="modal-backdrop" id="detail-modal" onclick="if(event.target===this)closeModal('detail-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Booking Detail
+      </span>
+      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer" id="detail-footer"></div>
+  </div>
+</div>
+
+<!-- ══ REJECT REASON MODAL ══ -->
+<div class="modal-backdrop" id="reject-modal" onclick="if(event.target===this)closeModal('reject-modal')">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--red)">
+        ❌ Reject Booking
+      </span>
+      <button class="modal-close" onclick="closeModal('reject-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--subtle);font-size:.88rem;margin-bottom:1rem;">Select a quick reason or type a custom note. This will be logged for records.</p>
+      <div class="reject-reasons" id="reason-chips">
+        <span class="reason-chip" onclick="setRejectReason(this,'Fake or reused UTR')">Fake/reused UTR</span>
+        <span class="reason-chip" onclick="setRejectReason(this,'Screenshot does not match')">Screenshot mismatch</span>
+        <span class="reason-chip" onclick="setRejectReason(this,'Wrong amount paid')">Wrong amount</span>
+        <span class="reason-chip" onclick="setRejectReason(this,'Payment to wrong UPI ID')">Wrong UPI ID</span>
+        <span class="reason-chip" onclick="setRejectReason(this,'Duplicate booking')">Duplicate</span>
+      </div>
+      <label class="form-label" style="margin-bottom:.5rem;">Reason / Notes</label>
+      <textarea class="reject-textarea" id="reject-reason-input" placeholder="Enter reason for rejection..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="tool-btn" onclick="closeModal('reject-modal')">Cancel</button>
+      <button class="act-btn act-reject" style="padding:.55rem 1.25rem;font-size:.88rem;" onclick="confirmReject()">Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREENSHOT LIGHTBOX ══ -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Payment screenshot">
+</div>
+
+<!-- ══ SESSION LOCK ══ -->
+<div class="session-lock" id="session-lock">
+  <div class="session-lock-box">
+    <h3>Session Expired</h3>
+    <p>Your admin session has timed out for security. Please log in again.</p>
+    <button class="login-btn" style="font-size:1.1rem;padding:.75rem;" onclick="sessionRelogin()">LOG IN AGAIN</button>
+  </div>
+</div>
+
+<!-- TOAST STACK -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════
+// SECURITY NOTE: Store the password server-side (Supabase Edge Function)
+// rather than hardcoded here. This is client-side only as a convenience layer.
+// The real security gate is Supabase RLS — only authenticated sessions can SELECT.
+const ADMIN_PASSWORD    = 'movietime2026';  // ← Change this
+const SESSION_DURATION  = 30 * 60 * 1000;  // 30 minutes
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION  = 5 * 60 * 1000;   // 5 minutes lockout after 5 fails
+const AUTO_REFRESH_SECS = 30;
+
+const SB_URL = 'https://lspjxjmbzgxtthpahfro.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzcGp4am1iemd4dHRocGFoZnJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNDI4NDQsImV4cCI6MjA4NjgxODg0NH0.jF1tjzP0qtcCqlCTyUx1jCL7LTuNW_gKJ1oPJJsvixE';
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+let allBookings     = [];
+let currentFilter   = 'all';
+let sessionExpiry   = 0;
+let loginAttempts   = 0;
+let lockedUntil     = 0;
+let rejectTargetId  = null;
+let autoRefreshTimer, sessionTickTimer, countdownTimer, countdownSecs;
+
+// ══════════════════════════════════════════════════════════════
+//  AUTH — Login / Logout / Session
+// ══════════════════════════════════════════════════════════════
+function doLogin() {
+  const now = Date.now();
+  if (now < lockedUntil) {
+    const secs = Math.ceil((lockedUntil - now) / 1000);
+    showLoginError(`Too many failed attempts. Try again in ${secs}s.`);
+    return;
+  }
+
+  const pwd = document.getElementById('pwd-input').value;
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'CHECKING...';
+
+  // Simulate tiny delay to prevent instant brute-force timing
+  setTimeout(() => {
+    if (pwd === ADMIN_PASSWORD) {
+      loginAttempts = 0;
+      sessionExpiry = Date.now() + SESSION_DURATION;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-app').classList.add('active');
+      document.getElementById('pwd-input').value = '';
+      document.getElementById('login-error').classList.remove('show');
+      startSessionTimer();
+      startAutoRefresh();
+      loadBookings();
+    } else {
+      loginAttempts++;
+      const remaining = MAX_LOGIN_ATTEMPTS - loginAttempts;
+      if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        lockedUntil = Date.now() + LOCKOUT_DURATION;
+        showLoginError('Account locked for 5 minutes due to too many failed attempts.');
+        document.getElementById('attempts-msg').textContent = '';
+      } else {
+        showLoginError(`Incorrect password. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`);
+        document.getElementById('attempts-msg').textContent = `${loginAttempts}/${MAX_LOGIN_ATTEMPTS} attempts`;
+      }
+      document.getElementById('pwd-input').classList.add('error');
+      document.getElementById('pwd-input').value = '';
+    }
+    btn.disabled = false;
+    btn.textContent = 'ENTER DASHBOARD →';
+  }, 350 + Math.random() * 150); // 350–500ms jitter
+}
+
+function showLoginError(msg) {
+  document.getElementById('login-error-msg').textContent = msg;
+  document.getElementById('login-error').classList.add('show');
+}
+
+function doLogout() {
+  clearInterval(autoRefreshTimer);
+  clearInterval(sessionTickTimer);
+  clearInterval(countdownTimer);
+  allBookings = [];
+  document.getElementById('admin-app').classList.remove('active');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('login-error').classList.remove('show');
+  document.getElementById('attempts-msg').textContent = '';
+}
+
+function startSessionTimer() {
+  clearInterval(sessionTickTimer);
+  sessionTickTimer = setInterval(() => {
+    const remaining = sessionExpiry - Date.now();
+    if (remaining <= 0) {
+      clearInterval(sessionTickTimer);
+      clearInterval(autoRefreshTimer);
+      document.getElementById('session-lock').classList.add('show');
+      return;
+    }
+    const m = String(Math.floor(remaining / 60000)).padStart(2,'0');
+    const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2,'0');
+    document.getElementById('session-timer').textContent = `Session: ${m}:${s}`;
+  }, 1000);
+}
+
+// Extend session on activity
+document.addEventListener('click', () => { if (sessionExpiry) sessionExpiry = Date.now() + SESSION_DURATION; });
+
+function sessionRelogin() {
+  document.getElementById('session-lock').classList.remove('show');
+  doLogout();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  AUTO REFRESH
+// ══════════════════════════════════════════════════════════════
+function startAutoRefresh() {
+  countdownSecs = AUTO_REFRESH_SECS;
+  clearInterval(autoRefreshTimer);
+  clearInterval(countdownTimer);
+
+  countdownTimer = setInterval(() => {
+    countdownSecs--;
+    document.getElementById('refresh-countdown').textContent = countdownSecs + 's';
+    if (countdownSecs <= 0) {
+      countdownSecs = AUTO_REFRESH_SECS;
+      loadBookings();
+    }
+  }, 1000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DATA — Load from Supabase
+// ══════════════════════════════════════════════════════════════
+async function loadBookings() {
+  countdownSecs = AUTO_REFRESH_SECS; // Reset countdown
+  document.getElementById('refresh-ring').classList.add('spinning');
+  document.getElementById('refresh-countdown').textContent = '…';
+
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/ticket_bookings?order=submitted_at.desc&limit=500`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allBookings = await res.json();
+    updateStats();
+    renderAll();
+  } catch(e) {
+    showToast('Failed to load bookings: ' + e.message, 'error');
+    document.getElementById('bookings-tbody').innerHTML = `
+      <tr class="state-row"><td colspan="11">
+        <div class="state-icon">⚠️</div>
+        <div class="state-msg" style="color:var(--red)">Connection error. Check your internet and try refreshing.</div>
+      </td></tr>`;
+  } finally {
+    document.getElementById('refresh-ring').classList.remove('spinning');
+    document.getElementById('refresh-countdown').textContent = AUTO_REFRESH_SECS + 's';
+    countdownSecs = AUTO_REFRESH_SECS;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════════════════════════
+function updateStats() {
+  const pending  = allBookings.filter(b => b.approval_status === 'pending').length;
+  const approved = allBookings.filter(b => b.approval_status === 'approved').length;
+  const rejected = allBookings.filter(b => b.approval_status === 'rejected').length;
+  const revenue  = allBookings.filter(b => b.approval_status === 'approved').reduce((s,b) => s + Number(b.total_amount||0), 0);
+  const tickets  = allBookings.reduce((s,b) => s + Number(b.quantity||0), 0);
+
+  document.getElementById('s-pending').textContent  = pending;
+  document.getElementById('s-approved').textContent = approved;
+  document.getElementById('s-rejected').textContent = rejected;
+  document.getElementById('s-revenue').textContent  = '₹' + revenue.toLocaleString('en-IN');
+  document.getElementById('s-tickets').textContent  = tickets;
+  document.getElementById('pending-count-text').textContent = pending + ' pending';
+
+  // Pulse badge only if there are pending
+  document.querySelector('.badge-dot').style.display = pending > 0 ? '' : 'none';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  FILTER
+// ══════════════════════════════════════════════════════════════
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Deactivate stat cards
+  document.querySelectorAll('.stat-card.clickable').forEach(c => c.classList.remove('active-filter'));
+  renderAll();
+}
+
+function clickStatFilter(f, card) {
+  // If already active, toggle back to 'all'
+  if (currentFilter === f) {
+    currentFilter = 'all';
+    card.classList.remove('active-filter');
+    document.getElementById('pill-all').classList.add('active');
+    document.querySelectorAll('.filter-pill:not(#pill-all)').forEach(p => p.classList.remove('active'));
+  } else {
+    currentFilter = f;
+    document.querySelectorAll('.stat-card.clickable').forEach(c => c.classList.remove('active-filter'));
+    card.classList.add('active-filter');
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('pill-' + f).classList.add('active');
+  }
+  renderAll();
+}
+
+function getFilteredRows() {
+  const search = (document.getElementById('search-input').value || '').toLowerCase().trim();
+  let rows = allBookings;
+  if (currentFilter !== 'all') rows = rows.filter(b => b.approval_status === currentFilter);
+  if (search) {
+    rows = rows.filter(b =>
+      (b.name||'').toLowerCase().includes(search) ||
+      (b.email||'').toLowerCase().includes(search) ||
+      (b.booking_id||'').toLowerCase().includes(search) ||
+      (b.transaction_id||'').toLowerCase().includes(search) ||
+      (b.phone||'').includes(search)
+    );
+  }
+  return rows;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════════════
+function renderAll() {
+  const rows = getFilteredRows();
+  document.getElementById('results-count').innerHTML =
+    `Showing <strong>${rows.length}</strong> of <strong>${allBookings.length}</strong> bookings`;
+  renderTable(rows);
+  renderCards(rows);
+}
+
+function renderTable(rows) {
+  if (!rows.length) {
+    document.getElementById('bookings-tbody').innerHTML = `
+      <tr class="state-row"><td colspan="11">
+        <div class="state-icon">📭</div>
+        <div class="state-msg">No bookings match your search.</div>
+      </td></tr>`;
+    return;
+  }
+
+  document.getElementById('bookings-tbody').innerHTML = rows.map(b => {
+    const status     = b.approval_status || 'pending';
+    const badgeClass = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected' }[status];
+    const badgeIcon  = { pending:'⏳', approved:'✅', rejected:'❌' }[status] || '⏳';
+    const date       = formatDate(b.submitted_at || b.created_at);
+    const screenshot = b.screenshot_url
+      ? `<img class="screenshot-thumb" src="${esc(b.screenshot_url)}" alt="screenshot" onclick="openLightbox('${esc(b.screenshot_url)}')" onerror="this.style.display='none'">`
+      : `<div class="no-screenshot" title="No screenshot">📷</div>`;
+
+    const actions = buildActions(b, status);
+
+    return `<tr class="row-${status}" data-id="${b.id}">
+      <td>${screenshot}</td>
+      <td><span class="cell-id" title="Click to copy" onclick="copyText('${b.booking_id||''}')" style="cursor:pointer">${b.booking_id||'—'}</span></td>
+      <td><span class="cell-name">${esc(b.name||'—')}</span></td>
+      <td><span class="cell-email" title="${esc(b.email||'')}">${esc(b.email||'—')}</span></td>
+      <td><span class="cell-phone">${esc(b.phone||'—')}</span></td>
+      <td class="cell-qty">${b.quantity||1}</td>
+      <td class="cell-amount">₹${b.total_amount||0}</td>
+      <td>
+        <span class="mono-chip">
+          <span title="${esc(b.transaction_id||'')}">${esc((b.transaction_id||'—').slice(0,15))}${(b.transaction_id||'').length>15?'…':''}</span>
+          ${b.transaction_id ? `<svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" onclick="copyText('${esc(b.transaction_id)}')" title="Copy UTR"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>` : ''}
+        </span>
+      </td>
+      <td><span class="status-badge ${badgeClass}">${badgeIcon} ${cap(status)}</span></td>
+      <td class="cell-date">${date}</td>
+      <td>
+        <div class="action-wrap">
+          <button class="act-btn act-view" onclick="openDetail('${b.id}')">👁 View</button>
+          ${actions}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCards(rows) {
+  if (!rows.length) {
+    document.getElementById('booking-cards').innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📭</div>
+        No bookings found.
+      </div>`;
+    return;
+  }
+  document.getElementById('booking-cards').innerHTML = rows.map(b => {
+    const status     = b.approval_status || 'pending';
+    const badgeClass = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected' }[status];
+    const badgeIcon  = { pending:'⏳', approved:'✅', rejected:'❌' }[status] || '⏳';
+    const actions    = buildActions(b, status);
+    return `<div class="booking-card card-${status}">
+      <div class="card-row">
+        <div>
+          <div class="card-name">${esc(b.name||'—')}</div>
+          <div style="font-size:.8rem;color:var(--subtle);margin-top:.15rem">${esc(b.email||'—')}</div>
+        </div>
+        <div class="card-amount">₹${b.total_amount||0}</div>
+      </div>
+      <div class="card-meta">
+        <span class="card-chip">🎟️ ${b.quantity||1} ticket${(b.quantity||1)>1?'s':''}</span>
+        <span class="card-chip" onclick="copyText('${b.booking_id||''}')" style="cursor:pointer">📋 ${b.booking_id||'—'}</span>
+        <span class="card-chip">${formatDate(b.submitted_at||b.created_at)}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+        <span class="status-badge ${badgeClass}">${badgeIcon} ${cap(status)}</span>
+        <div class="card-actions">
+          <button class="act-btn act-view" onclick="openDetail('${b.id}')">👁 View</button>
+          ${actions}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildActions(b, status) {
+  if (status === 'pending') {
+    return `<button class="act-btn act-approve" onclick="approveBooking('${b.id}')">✓ Approve</button>
+            <button class="act-btn act-reject" onclick="openRejectModal('${b.id}')">✗ Reject</button>`;
+  } else {
+    return `<button class="act-btn act-undo" onclick="updateStatus('${b.id}','pending',null)">↩ Undo</button>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DETAIL MODAL
+// ══════════════════════════════════════════════════════════════
+function openDetail(id) {
+  const b = allBookings.find(x => x.id === id);
+  if (!b) return;
+  const status     = b.approval_status || 'pending';
+  const badgeClass = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected' }[status];
+
+  const screenshotHtml = b.screenshot_url
+    ? `<img class="screenshot-modal-img" src="${esc(b.screenshot_url)}" alt="Payment screenshot" onclick="openLightbox('${esc(b.screenshot_url)}')">`
+    : `<div class="no-screenshot-modal">📷 No screenshot uploaded</div>`;
+
+  document.getElementById('detail-body').innerHTML = `
+    ${screenshotHtml}
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-label">Booking ID</div><div class="detail-value mono" onclick="copyText('${esc(b.booking_id||'')}')" style="cursor:pointer">${esc(b.booking_id||'—')} <span style="color:var(--muted);font-size:.75rem">⌘C</span></div></div>
+      <div class="detail-field"><div class="detail-label">Status</div><div class="detail-value"><span class="status-badge ${badgeClass}">${cap(status)}</span></div></div>
+      <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${esc(b.name||'—')}</div></div>
+      <div class="detail-field"><div class="detail-label">Phone</div><div class="detail-value mono">${esc(b.phone||'—')}</div></div>
+      <div class="detail-field full"><div class="detail-label">Email</div><div class="detail-value">${esc(b.email||'—')}</div></div>
+      <div class="detail-field"><div class="detail-label">Tickets</div><div class="detail-value">${b.quantity||1}</div></div>
+      <div class="detail-field"><div class="detail-label">Amount</div><div class="detail-value mono">₹${b.total_amount||0}</div></div>
+      <div class="detail-field full"><div class="detail-label">UPI Transaction ID</div><div class="detail-value mono" onclick="copyText('${esc(b.transaction_id||'')}')" style="cursor:pointer">${esc(b.transaction_id||'—')} <span style="color:var(--muted);font-size:.75rem">⌘C</span></div></div>
+      <div class="detail-field"><div class="detail-label">Submitted</div><div class="detail-value mono" style="font-size:.82rem">${formatDateFull(b.submitted_at||b.created_at)}</div></div>
+      ${b.approved_at ? `<div class="detail-field"><div class="detail-label">Approved At</div><div class="detail-value mono" style="font-size:.82rem">${formatDateFull(b.approved_at)}</div></div>` : ''}
+      ${b.notes ? `<div class="detail-field full"><div class="detail-label">Admin Notes</div><div class="detail-value">${esc(b.notes)}</div></div>` : ''}
+    </div>`;
+
+  const footer = document.getElementById('detail-footer');
+  if (status === 'pending') {
+    footer.innerHTML = `
+      <button class="tool-btn" onclick="closeModal('detail-modal')">Close</button>
+      <button class="act-btn act-reject" style="padding:.6rem 1.1rem;" onclick="closeModal('detail-modal');openRejectModal('${b.id}')">✗ Reject</button>
+      <button class="act-btn act-approve" style="padding:.6rem 1.1rem;" onclick="closeModal('detail-modal');approveBooking('${b.id}')">✓ Approve</button>`;
+  } else {
+    footer.innerHTML = `
+      <button class="tool-btn" onclick="closeModal('detail-modal')">Close</button>
+      <button class="act-btn act-undo" style="padding:.6rem 1.1rem;" onclick="closeModal('detail-modal');updateStatus('${b.id}','pending',null)">↩ Reset to Pending</button>`;
+  }
+  openModal('detail-modal');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  APPROVE / REJECT
+// ══════════════════════════════════════════════════════════════
+async function approveBooking(id) {
+  await updateStatus(id, 'approved', null);
+}
+
+function openRejectModal(id) {
+  rejectTargetId = id;
+  document.getElementById('reject-reason-input').value = '';
+  document.querySelectorAll('.reason-chip').forEach(c => c.style.background = '');
+  openModal('reject-modal');
+}
+
+function setRejectReason(chip, text) {
+  document.querySelectorAll('.reason-chip').forEach(c => { c.style.background = ''; c.style.color = ''; c.style.borderColor = ''; });
+  chip.style.background   = 'var(--red-dim)';
+  chip.style.color        = 'var(--red)';
+  chip.style.borderColor  = 'rgba(239,68,68,.4)';
+  document.getElementById('reject-reason-input').value = text;
+}
+
+async function confirmReject() {
+  const reason = document.getElementById('reject-reason-input').value.trim();
+  closeModal('reject-modal');
+  await updateStatus(rejectTargetId, 'rejected', reason || 'No reason specified');
+  rejectTargetId = null;
+}
+
+async function updateStatus(id, newStatus, notes) {
+  const body = {
+    approval_status: newStatus,
+    status:          newStatus === 'approved' ? 'confirmed' : newStatus,
+    approved_at:     newStatus === 'approved' ? new Date().toISOString() : null,
+  };
+  if (notes !== null) body.notes = notes;
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ticket_bookings?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    // Update local state
+    const idx = allBookings.findIndex(b => b.id === id);
+    if (idx !== -1) {
+      allBookings[idx] = { ...allBookings[idx], ...body };
+    }
+    updateStats();
+    renderAll();
+
+    const msgs = { approved:'✅ Booking approved!', rejected:'❌ Booking rejected', pending:'↩ Reset to pending' };
+    showToast(msgs[newStatus] || 'Updated', newStatus === 'approved' ? 'success' : newStatus === 'rejected' ? 'error' : 'info');
+  } catch(e) {
+    showToast('Update failed: ' + e.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════════════════════════════════
+function exportCSV() {
+  const rows = getFilteredRows();
+  if (!rows.length) { showToast('No data to export', 'info'); return; }
+
+  const headers = ['Booking ID','Name','Email','Phone','Quantity','Amount','UTR/TxnID','Status','Submitted','Screenshot URL','Notes'];
+  const csvRows = [headers, ...rows.map(b => [
+    b.booking_id||'', b.name||'', b.email||'', b.phone||'',
+    b.quantity||1, b.total_amount||0, b.transaction_id||'',
+    b.approval_status||'pending',
+    formatDateFull(b.submitted_at||b.created_at),
+    b.screenshot_url||'', b.notes||''
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`))];
+
+  const csv  = csvRows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `bookings_${currentFilter}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${rows.length} rows`, 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SCREENSHOT LIGHTBOX
+// ══════════════════════════════════════════════════════════════
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ══════════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════════
+function showToast(msg, type='info') {
+  const stack = document.getElementById('toast-stack');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  const icons = { success:'✓', error:'✕', info:'ℹ' };
+  t.innerHTML = `<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  stack.appendChild(t);
+  setTimeout(() => { t.classList.add('toast-exit'); setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
+  } catch { return '—'; }
+}
+function formatDateFull(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+  } catch { return '—'; }
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied: ' + text.slice(0,20) + (text.length>20?'…':''), 'success');
+  }).catch(() => {
+    // Fallback
+    const el = document.createElement('textarea');
+    el.value = text; document.body.appendChild(el); el.select();
+    document.execCommand('copy'); document.body.removeChild(el);
+    showToast('Copied!', 'success');
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['detail-modal','reject-modal'].forEach(closeModal);
+    closeLightbox();
+  }
+  if (e.key === 'r' && (e.metaKey || e.ctrlKey) && document.getElementById('admin-app').classList.contains('active')) {
+    e.preventDefault(); loadBookings();
+  }
+  if (e.key === '/' && document.getElementById('admin-app').classList.contains('active')) {
+    e.preventDefault(); document.getElementById('search-input').focus();
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  LOGIN INPUT CLEAR
+// ══════════════════════════════════════════════════════════════
+document.getElementById('pwd-input').addEventListener('input', () => {
+  document.getElementById('pwd-input').classList.remove('error');
+  document.getElementById('login-error').classList.remove('show');
+});
+</script>
+</body>
+</html>
