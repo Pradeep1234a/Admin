@@ -2,269 +2,376 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>🎬 Admin — Movie Time 2026</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🎬 Admin — Movie Time Festival 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ─── TOKENS ─── */
 :root{
-  --void:#050507;--ink:#0d0d12;--charcoal:#141419;--carbon:#1c1c24;
-  --graphite:#252530;--steel:#34343f;--iron:#4a4a58;--ash:#6b6b7e;
-  --silver:#a0a0b8;--mist:#c8c8dc;--ghost:#e8e8f0;--white:#f8f8ff;
-  --flame:#ff6b00;--amber:#ff8c42;
-  --green:#00e676;--red:#ff1744;--yellow:#ffd600;--blue:#00b0ff;
-  --r:12px;--rsm:8px;
-  --font:'Syne',sans-serif;--mono:'DM Mono',monospace;
-  --nav-h:58px;
+  --bg:#08090c;--surface:#0f1117;--card:#161a22;--border:#1e2330;--border2:#252c3a;
+  --t1:#f0f2f8;--t2:#8892a4;--t3:#4a5568;--t4:#2d3748;
+  --flame:#ff5c1a;--flame2:#ff7a40;--amber:#f59e0b;
+  --green:#10b981;--green2:#34d399;--red:#ef4444;--red2:#f87171;
+  --blue:#3b82f6;--blue2:#60a5fa;--yellow:#f59e0b;--purple:#8b5cf6;
+  --r:10px;--r2:8px;--r3:6px;
+  --fn:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;
+  --nav:56px;--sb:240px;
+  --sh-card:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --sh-modal:0 25px 50px rgba(0,0,0,.8);
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);background:var(--void);color:var(--ghost);min-height:100vh}
-button{font-family:var(--font);cursor:pointer}
-a{color:var(--blue)}
+*,::before,::after{margin:0;padding:0;box-sizing:border-box}
+html{height:100%}
+body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font-family:var(--fn)}
+a{color:var(--blue2);text-decoration:none}
+a:hover{text-decoration:underline}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 .hidden{display:none!important}
 
-/* ── LAYOUT ── */
-.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+/* ─── APP SHELL ─── */
+.app{display:grid;grid-template-columns:var(--sb) 1fr;min-height:100vh}
 
-/* ── SIDEBAR ── */
-.sidebar{background:var(--ink);border-right:1px solid var(--graphite);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-logo{padding:1.25rem 1.4rem;border-bottom:1px solid var(--graphite)}
-.sb-logo h2{font-size:1rem;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--flame));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sb-logo p{font-size:.6rem;color:var(--ash);margin-top:2px;letter-spacing:.12em;text-transform:uppercase}
+/* ─── SIDEBAR ─── */
+.sidebar{
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+  z-index:50;
+}
+.sb-brand{padding:1.25rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+.sb-brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--flame),#c53012);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;box-shadow:0 4px 12px rgba(255,92,26,.3)}
+.sb-brand-text{min-width:0}
+.sb-brand-name{font-size:.88rem;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.sb-brand-sub{font-size:.6rem;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
 .sb-nav{padding:.75rem .6rem;flex:1}
-.sb-sep{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--iron);padding:8px 10px 3px;margin-top:4px}
-.sb-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--rsm);color:var(--ash);font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:3px;transition:all .17s;border:1px solid transparent}
-.sb-item:hover{background:var(--carbon);color:var(--mist)}
-.sb-item.on{background:rgba(255,107,0,.12);color:var(--amber);border-color:rgba(255,107,0,.2)}
-.sb-badge{margin-left:auto;border-radius:50px;padding:2px 7px;font-size:.6rem;font-weight:800;background:var(--flame);color:#000;min-width:18px;text-align:center}
-.sb-badge.bl{background:var(--blue)}
-.sb-foot{padding:.75rem 1rem;border-top:1px solid var(--graphite);font-size:.68rem;color:var(--iron)}
+.sb-section{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);padding:8px 10px 4px;margin-top:4px}
+.sb-item{
+  display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r2);
+  color:var(--t2);font-size:.83rem;font-weight:500;cursor:pointer;
+  margin-bottom:2px;transition:all .15s;border:1px solid transparent;
+  text-decoration:none;
+}
+.sb-item:hover{background:var(--card);color:var(--t1)}
+.sb-item.active{background:rgba(255,92,26,.1);color:var(--flame2);border-color:rgba(255,92,26,.18);font-weight:600}
+.sb-item svg{flex-shrink:0;opacity:.7}
+.sb-item.active svg{opacity:1}
+.sb-badge{margin-left:auto;border-radius:20px;padding:1px 6px;font-size:.58rem;font-weight:800;min-width:18px;text-align:center;line-height:1.6}
+.sb-badge.orange{background:var(--flame);color:#fff}
+.sb-badge.blue{background:var(--blue);color:#fff}
+.sb-badge.red{background:var(--red);color:#fff}
+.sb-divider{height:1px;background:var(--border);margin:.5rem .6rem}
+.sb-foot{padding:.75rem 1.2rem;border-top:1px solid var(--border)}
+.sb-foot-row{display:flex;align-items:center;gap:.5rem}
+.sb-foot-dot{width:7px;height:7px;background:var(--green2);border-radius:50%;box-shadow:0 0 6px var(--green2);flex-shrink:0}
+.sb-foot-txt{font-size:.7rem;color:var(--t3)}
 
-/* ── MAIN ── */
-.main{background:var(--void);overflow-x:hidden;min-width:0}
-.topbar{background:var(--ink);border-bottom:1px solid var(--graphite);padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:100}
-.topbar h1{font-size:.98rem;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.topbar-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.badge-admin{background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);border-radius:50px;padding:3px 12px;font-size:.66rem;font-weight:700;color:var(--amber)}
-.btn-refresh{background:var(--graphite);border:1px solid var(--steel);border-radius:var(--rsm);padding:6px 12px;color:var(--silver);font-size:.78rem;font-weight:600}
-.btn-refresh:hover{background:var(--steel)}
+/* ─── MAIN ─── */
+.main{display:flex;flex-direction:column;min-width:0;overflow-x:hidden}
 
-/* ── CONTENT / PAGES ── */
-.content{padding:1.1rem}
-.page{display:none}.page.active{display:block}
+/* ─── TOPBAR ─── */
+.topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:.85rem 1.5rem;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:40;
+}
+.topbar-left{display:flex;align-items:center;gap:.75rem;min-width:0}
+.topbar-left h1{font-size:.95rem;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-crumb{font-size:.75rem;color:var(--t3)}
+.topbar-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.pill-admin{background:rgba(255,92,26,.12);border:1px solid rgba(255,92,26,.25);border-radius:20px;padding:3px 10px;font-size:.65rem;font-weight:700;color:var(--flame2);letter-spacing:.04em}
+.btn-icon{background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);padding:6px 10px;color:var(--t2);font-size:.75rem;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .15s}
+.btn-icon:hover{background:var(--border);color:var(--t1)}
+.btn-icon svg{flex-shrink:0}
 
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.1rem}
-.sc{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);padding:.9rem}
-.sc.hi{background:var(--charcoal);border-color:rgba(255,107,0,.3);box-shadow:0 0 20px rgba(255,107,0,.07)}
-.sc-lbl{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);margin-bottom:5px}
-.sc-val{font-size:1.75rem;font-weight:800;line-height:1}
-.oc{color:var(--amber)}.gc{color:var(--green)}.rc{color:var(--red)}.yc{color:var(--yellow)}
-.sc-sub{font-size:.66rem;color:var(--ash);margin-top:4px}
+/* ─── CONTENT ─── */
+.content{padding:1.25rem;flex:1}
+.page{display:none}
+.page.active{display:block}
 
-/* ── FILTER BAR ── */
-.fbar{display:flex;gap:7px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
-.fbtn{padding:6px 13px;border-radius:50px;font-family:var(--font);font-size:.76rem;font-weight:700;cursor:pointer;border:1px solid var(--steel);background:transparent;color:var(--ash);transition:all .15s;white-space:nowrap}
-.fbtn:hover{background:var(--graphite);color:var(--mist)}
-.fbtn.on{background:rgba(255,107,0,.15);border-color:rgba(255,107,0,.4);color:var(--amber)}
-.search{flex:1;min-width:160px;background:var(--carbon);border:1px solid var(--steel);border-radius:var(--rsm);padding:7px 12px;color:var(--white);font-family:var(--font);font-size:.82rem}
-.search:focus{outline:none;border-color:var(--flame)}
+/* ─── STATS GRID ─── */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;margin-bottom:1.25rem}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;position:relative;overflow:hidden;transition:border-color .2s}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.stat:hover{border-color:var(--border2)}
+.stat.s-income::before{background:linear-gradient(90deg,var(--green),var(--green2));opacity:1}
+.stat.s-sells::before{background:linear-gradient(90deg,var(--flame),var(--flame2));opacity:1}
+.stat.s-income,.stat.s-sells{border-color:rgba(255,255,255,.06)}
+.stat-ico{font-size:1.1rem;margin-bottom:.5rem}
+.stat-lbl{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:.35rem}
+.stat-val{font-size:1.65rem;font-weight:800;line-height:1;letter-spacing:-.02em}
+.stat-sub{font-size:.62rem;color:var(--t3);margin-top:.3rem}
+.v-green{color:var(--green2)}.v-orange{color:var(--flame2)}.v-yellow{color:var(--amber)}.v-red{color:var(--red2)}.v-blue{color:var(--blue2)}
 
-/* ── COMPARE BAR ── */
-.cbar{background:var(--ink);border:1px solid rgba(255,107,0,.25);border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cbar-lbl{font-size:.76rem;font-weight:700;color:var(--amber);white-space:nowrap}
-.ctags{display:flex;gap:6px;flex:1;flex-wrap:wrap}
-.ctag{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.25);border-radius:50px;padding:2px 10px;font-size:.7rem;color:var(--amber);font-weight:600}
-.cacts{display:flex;gap:6px}
+/* ─── TOOLBAR ─── */
+.toolbar{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap}
+.filter-tabs{display:flex;gap:3px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:3px}
+.ftab{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--t2);transition:all .14s;white-space:nowrap}
+.ftab:hover{color:var(--t1)}
+.ftab.active{background:var(--border2);color:var(--t1);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.search-wrap{flex:1;min-width:180px;position:relative}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+.search-inp{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:7px 12px 7px 32px;color:var(--t1);font-family:var(--fn);font-size:.8rem;transition:border-color .15s}
+.search-inp:focus{outline:none;border-color:rgba(255,92,26,.4)}
+.search-inp::placeholder{color:var(--t3)}
+.toolbar-actions{display:flex;gap:.5rem;margin-left:auto}
 
-/* ── BUTTONS ── */
-.btn{padding:5px 10px;border-radius:6px;font-family:var(--font);font-size:.7rem;font-weight:700;border:none;transition:all .15s;white-space:nowrap}
-.bv{background:var(--graphite);color:var(--silver);border:1px solid var(--steel)}.bv:hover{background:var(--steel)}
-.ba{background:rgba(0,230,118,.14);color:var(--green);border:1px solid rgba(0,230,118,.3)}.ba:hover{background:rgba(0,230,118,.24)}
-.ba:disabled{opacity:.35;cursor:not-allowed}
-.br{background:rgba(255,23,68,.12);color:var(--red);border:1px solid rgba(255,23,68,.25)}.br:hover{background:rgba(255,23,68,.22)}
-.bs{background:rgba(0,176,255,.1);color:var(--blue);border:1px solid rgba(0,176,255,.25)}.bs:hover{background:rgba(0,176,255,.2)}
-.bc{background:rgba(255,107,0,.1);color:var(--amber);border:1px solid rgba(255,107,0,.25)}.bc:hover{background:rgba(255,107,0,.2)}
-.bc.on{background:rgba(255,107,0,.28);border-color:var(--flame);color:var(--flame)}
-.bd{background:rgba(255,23,68,.1);color:var(--red);border:1px solid rgba(255,23,68,.2)}.bd:hover{background:rgba(255,23,68,.22)}
-.bdanger{background:rgba(255,23,68,.18);color:var(--red);border:1px solid rgba(255,23,68,.4)}.bdanger:hover{background:rgba(255,23,68,.3)}
-.bprimary{background:linear-gradient(135deg,var(--flame),#e63900);color:#fff;border:none}
-.bprimary:hover{opacity:.9}
-.blg{padding:10px 16px;font-size:.8rem;flex:1}
-.acts{display:flex;gap:5px;flex-wrap:wrap}
+/* ─── SELECTION BAR ─── */
+.sel-bar{
+  display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;
+  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);
+  border-radius:var(--r);margin-bottom:.9rem;flex-wrap:wrap;
+}
+.sel-bar-info{font-size:.8rem;color:var(--red2);font-weight:600;flex:1}
+.sel-bar-acts{display:flex;gap:.5rem}
 
-/* ── TABLE ── */
-.twrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--graphite)}
-table{width:100%;border-collapse:collapse;font-size:.79rem}
-thead{background:var(--charcoal);border-bottom:1px solid var(--graphite)}
-th{padding:10px 12px;text-align:left;font-weight:700;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--graphite);transition:background .12s}
+/* ─── COMPARE BAR ─── */
+.cmp-bar{
+  display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;
+  background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);
+  border-radius:var(--r);margin-bottom:.9rem;flex-wrap:wrap;
+}
+.cmp-bar-lbl{font-size:.78rem;color:var(--amber);font-weight:700;white-space:nowrap}
+.cmp-tags{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.cmp-tag{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:20px;padding:2px 9px;font-size:.68rem;color:var(--amber);font-weight:600}
+.cmp-bar-acts{display:flex;gap:.5rem}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r2);font-family:var(--fn);font-size:.73rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .14s;white-space:nowrap;line-height:1.2}
+.btn svg{flex-shrink:0;width:13px;height:13px}
+/* variants */
+.btn-ghost{background:transparent;color:var(--t2);border-color:var(--border2)}.btn-ghost:hover{background:var(--card);color:var(--t1)}
+.btn-primary{background:var(--flame);color:#fff;border-color:var(--flame);box-shadow:0 2px 8px rgba(255,92,26,.25)}.btn-primary:hover{background:var(--flame2)}
+.btn-green{background:rgba(16,185,129,.12);color:var(--green2);border-color:rgba(16,185,129,.25)}.btn-green:hover{background:rgba(16,185,129,.2)}
+.btn-red{background:rgba(239,68,68,.1);color:var(--red2);border-color:rgba(239,68,68,.22)}.btn-red:hover{background:rgba(239,68,68,.2)}
+.btn-red-solid{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 2px 8px rgba(239,68,68,.3)}.btn-red-solid:hover{background:var(--red2)}
+.btn-blue{background:rgba(59,130,246,.1);color:var(--blue2);border-color:rgba(59,130,246,.22)}.btn-blue:hover{background:rgba(59,130,246,.2)}
+.btn-amber{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.22)}.btn-amber:hover{background:rgba(245,158,11,.2)}
+.btn-amber.on{background:rgba(245,158,11,.25);border-color:var(--amber);color:var(--amber)}
+.btn-sm{padding:4px 9px;font-size:.68rem}
+.btn-lg{padding:9px 18px;font-size:.82rem}
+.btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.btn-danger-outline{background:transparent;color:var(--red2);border-color:rgba(239,68,68,.3)}.btn-danger-outline:hover{background:rgba(239,68,68,.1)}
+
+/* ─── TABLE ─── */
+.tbl-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+thead{background:var(--card)}
+th{
+  padding:10px 13px;text-align:left;font-size:.62rem;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--t3);
+  white-space:nowrap;border-bottom:1px solid var(--border);
+}
+th:first-child{width:40px;padding-right:0}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.025)}
-td{padding:9px 12px;vertical-align:middle}
-.mono{font-family:var(--mono);font-size:.74rem}
-.nc{font-weight:600;color:var(--white)}
-.ec{color:var(--silver);font-size:.76rem}
-input[type=checkbox]{accent-color:var(--flame);width:14px;height:14px;cursor:pointer;vertical-align:middle}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr.selected{background:rgba(239,68,68,.04)}
+td{padding:11px 13px;vertical-align:middle}
+td:first-child{padding-right:0}
+.td-mono{font-family:var(--fm);font-size:.73rem;color:var(--t2)}
+.td-name{font-weight:600;color:var(--t1)}
+.td-muted{color:var(--t2);font-size:.76rem}
+.td-amt{font-weight:700;color:var(--amber)}
+input[type=checkbox]{
+  width:15px;height:15px;cursor:pointer;
+  accent-color:var(--flame);vertical-align:middle;
+}
 
-/* ── STATUS PILLS ── */
-.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:50px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-.pp{background:rgba(255,214,0,.1);color:var(--yellow);border:1px solid rgba(255,214,0,.25)}
-.pa{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.25)}
-.pj{background:rgba(255,23,68,.1);color:var(--red);border:1px solid rgba(255,23,68,.25)}
+/* ─── STATUS PILLS ─── */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.pill-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.pill-pending{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.pill-pending .pill-dot{background:var(--amber)}
+.pill-approved{background:rgba(16,185,129,.1);color:var(--green2);border:1px solid rgba(16,185,129,.2)}
+.pill-approved .pill-dot{background:var(--green2)}
+.pill-rejected{background:rgba(239,68,68,.1);color:var(--red2);border:1px solid rgba(239,68,68,.2)}
+.pill-rejected .pill-dot{background:var(--red2)}
 
-/* ── MOBILE CARDS ── */
-.mlist{display:none;flex-direction:column;gap:.7rem}
-.mcard{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);padding:.95rem}
-.mcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.55rem;gap:.5rem}
-.mcard-name{font-weight:700;color:var(--white);font-size:.9rem}
-.mcard-id{font-size:.66rem;color:var(--ash);font-family:var(--mono);margin-top:1px}
-.mcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .6rem;margin-bottom:.65rem}
-.mf label{display:block;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--iron);margin-bottom:1px}
-.mf span{font-size:.76rem;color:var(--ghost)}
-.mf span.hi{color:var(--amber);font-weight:700}
+/* ─── MOBILE CARDS ─── */
+.card-grid{display:none;flex-direction:column;gap:.6rem}
+.bk-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1rem;transition:border-color .15s}
+.bk-card:hover{border-color:var(--border2)}
+.bk-card.selected{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.03)}
+.bk-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.65rem}
+.bk-card-id{font-family:var(--fm);font-size:.65rem;color:var(--t3);margin-top:2px}
+.bk-card-name{font-weight:700;color:var(--t1);font-size:.88rem}
+.bk-card-body{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .6rem;margin-bottom:.7rem}
+.bk-field label{display:block;font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:1px}
+.bk-field span{font-size:.76rem;color:var(--t2)}
+.bk-field span.hi{color:var(--amber);font-weight:700}
+.bk-card-foot{display:flex;gap:.4rem;flex-wrap:wrap}
 
-/* ── OVERLAYS / MODALS ── */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:800;display:flex;align-items:center;justify-content:center;padding:.85rem;overflow-y:auto}
+/* ─── OVERLAYS ─── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:800;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .ov.hidden{display:none}
-.modal{background:var(--carbon);border:1px solid var(--graphite);border-radius:18px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;margin:auto}
-.modal.wide{max-width:800px}
-.modal.sm{max-width:380px}
-.mh{padding:1.1rem 1.4rem;border-bottom:1px solid var(--graphite);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--carbon);z-index:1}
-.mh h3{font-size:.95rem;font-weight:700}
-.mx{background:var(--graphite);border:none;color:var(--silver);width:30px;height:30px;border-radius:50%;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.mx:hover{background:var(--steel)}
-.mb{padding:1.1rem 1.4rem}
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
-.di label{display:block;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);margin-bottom:3px}
-.di span{font-size:.83rem;color:var(--white);word-break:break-all}
-.di.w{grid-column:1/-1}
-.ma{padding:.9rem 1.4rem;border-top:1px solid var(--graphite);display:flex;gap:7px;flex-wrap:wrap}
-.ma .btn{flex:1;padding:10px;font-size:.79rem}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:14px;width:100%;box-shadow:var(--sh-modal);margin:auto}
+.modal-sm{max-width:380px}
+.modal-md{max-width:560px}
+.modal-lg{max-width:820px}
+.modal-hd{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);border-radius:14px 14px 0 0;z-index:1}
+.modal-hd h3{font-size:.92rem;font-weight:700;color:var(--t1)}
+.modal-hd .modal-sub{font-size:.72rem;color:var(--t3);margin-top:1px}
+.modal-x{background:var(--border);border:none;color:var(--t2);width:28px;height:28px;border-radius:50%;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s}
+.modal-x:hover{background:var(--border2);color:var(--t1)}
+.modal-body{padding:1.25rem 1.4rem;max-height:70vh;overflow-y:auto}
+.modal-ft{padding:.9rem 1.4rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-wrap:wrap}
+.modal-ft .btn{flex:1}
 
-/* ── SS PREVIEW ── */
-.ss-blk{margin-top:1rem;border-top:1px solid var(--graphite);padding-top:1rem}
-.ss-lbl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);margin-bottom:7px}
-.ss-img{width:100%;border-radius:var(--rsm);border:1px solid var(--steel);cursor:pointer;display:block;transition:border-color .18s}
+/* ─── DETAIL GRID ─── */
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.det-field label{display:block;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:3px}
+.det-field span{font-size:.83rem;color:var(--t1);word-break:break-all}
+.det-field.span2{grid-column:1/-1}
+
+/* ─── SCREENSHOT BLOCK ─── */
+.ss-block{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.ss-block-lbl{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:.5rem}
+.ss-img{width:100%;border-radius:var(--r2);border:1px solid var(--border2);cursor:zoom-in;display:block;transition:border-color .15s;max-height:300px;object-fit:contain;background:var(--surface)}
 .ss-img:hover{border-color:var(--flame)}
-.ss-hint{font-size:.66rem;color:var(--ash);margin-top:5px;text-align:center}
+.ss-hint{font-size:.65rem;color:var(--t3);margin-top:.4rem;display:flex;align-items:center;justify-content:space-between}
 
-/* ── LIGHTBOX ── */
-#lb{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;overflow:auto}
-.lbx{position:fixed;top:12px;right:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:1201}
-.lbx:hover{background:rgba(255,255,255,.22)}
-#lb-img{max-width:90vw;max-height:76vh;border-radius:var(--r);border:1px solid var(--steel);object-fit:contain;cursor:zoom-in;display:block}
-#lb-img.zm{max-width:none;max-height:none;cursor:zoom-out;width:auto;height:auto}
-.lb-info{color:var(--ash);font-size:.72rem;margin-top:.6rem;text-align:center}
-.lb-bar{display:flex;gap:7px;margin-top:.6rem;flex-wrap:wrap;justify-content:center}
-.lbbtn{background:var(--graphite);border:1px solid var(--steel);color:var(--silver);padding:7px 14px;border-radius:var(--rsm);font-family:var(--font);font-size:.76rem;font-weight:600;cursor:pointer}
-.lbbtn:hover{background:var(--steel)}
-.lbbtn.bl{background:rgba(0,176,255,.12);color:var(--blue);border-color:rgba(0,176,255,.3)}
+/* ─── LIGHTBOX ─── */
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:1200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+.lb-x{position:fixed;top:12px;right:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;width:38px;height:38px;border-radius:50%;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:1201;cursor:pointer;transition:background .15s}
+.lb-x:hover{background:rgba(255,255,255,.16)}
+#lb-img{max-width:90vw;max-height:78vh;border-radius:var(--r);object-fit:contain;cursor:zoom-in;display:block}
+#lb-img.zm{max-width:none;max-height:none;cursor:zoom-out}
+.lb-caption{color:var(--t2);font-size:.72rem;margin-top:.6rem;text-align:center}
+.lb-bar{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap;justify-content:center}
+.lb-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--t1);padding:7px 14px;border-radius:var(--r2);font-family:var(--fn);font-size:.75rem;font-weight:600;cursor:pointer;transition:background .14s}
+.lb-btn:hover{background:rgba(255,255,255,.13)}
+.lb-btn.blue{background:rgba(59,130,246,.15);color:var(--blue2);border-color:rgba(59,130,246,.3)}
 
-/* ── COMPARE MODAL ── */
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.ccol{background:var(--charcoal);border:1px solid var(--graphite);border-radius:var(--r);padding:1rem}
-.cctitle{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--graphite)}
-.cfield{margin-bottom:.6rem}
-.cfield label{display:block;font-size:.56rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ash);margin-bottom:2px}
-.cfield span{font-size:.8rem;color:var(--white);word-break:break-all}
-.cfield.diff span{color:var(--yellow)}
-.cfield.diff label::after{content:" ⚠";color:var(--yellow)}
+/* ─── COMPARE ─── */
+.cmp-cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cmp-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;overflow-y:auto}
+.cmp-col-hd{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.cmp-row{margin-bottom:.6rem}
+.cmp-row label{display:block;font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:2px}
+.cmp-row span{font-size:.8rem;color:var(--t1);word-break:break-all}
+.cmp-row.diff span{color:var(--amber)}
+.cmp-row.diff label::after{content:' ⚠';color:var(--amber)}
 
-/* ── CONFIRM MODAL ── */
-.cfbody{padding:1.75rem 1.4rem;text-align:center}
-.cficon{font-size:2.6rem;margin-bottom:.6rem}
-.cfbody h4{font-size:1rem;font-weight:800;color:var(--white);margin-bottom:.45rem}
-.cfbody p{font-size:.8rem;color:var(--ash);line-height:1.6}
-.cfbody .hi{color:var(--red);font-weight:700}
-.cfacts{padding:.85rem 1.4rem;border-top:1px solid var(--graphite);display:flex;gap:7px}
-.cfacts .btn{flex:1;padding:11px;font-size:.82rem}
+/* ─── CONFIRM MODAL ─── */
+.cf-body{padding:2rem 1.4rem;text-align:center}
+.cf-ico{font-size:2.5rem;line-height:1;margin-bottom:.75rem}
+.cf-body h4{font-size:.98rem;font-weight:800;color:var(--t1);margin-bottom:.4rem}
+.cf-body p{font-size:.8rem;color:var(--t2);line-height:1.65}
+.cf-body .hi{color:var(--red2);font-weight:700}
+.cf-count{
+  display:inline-block;margin:.75rem 0 0;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
+  border-radius:var(--r2);padding:.5rem 1rem;
+  font-size:.82rem;font-weight:700;color:var(--red2);
+}
 
-/* ── GALLERY ── */
-.gbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem}
-.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem}
-.gcard{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .17s,transform .13s}
-.gcard:hover{border-color:var(--flame);transform:translateY(-2px)}
-.gimg-wrap{width:100%;aspect-ratio:4/3;background:var(--charcoal);overflow:hidden;position:relative}
-.gimg{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s}
-.gimg.dim{opacity:.3}
-.gph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--iron)}
-.gbadge{position:absolute;top:6px;right:6px;font-size:.56rem;font-weight:800;padding:2px 6px;border-radius:50px;text-transform:uppercase}
-.gbody{padding:.7rem}
-.gname{font-size:.72rem;font-weight:700;color:var(--white);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gmeta{font-size:.64rem;color:var(--ash)}
-.glink{font-size:.64rem;color:var(--blue);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.glink:hover{text-decoration:underline}
-.gunlinked{font-size:.64rem;color:var(--iron);margin-top:3px;font-style:italic}
-.gacts{display:flex;gap:4px;margin-top:.55rem}
+/* ─── GALLERY ─── */
+.gal-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.75rem}
+.gal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .17s,transform .13s,box-shadow .17s}
+.gal-card:hover{border-color:rgba(255,92,26,.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.gal-img-wrap{width:100%;aspect-ratio:4/3;background:var(--surface);overflow:hidden;position:relative}
+.gal-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s,transform .3s}
+.gal-img.loading{opacity:.25}
+.gal-card:hover .gal-img{transform:scale(1.03)}
+.gal-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--t4)}
+.gal-status{position:absolute;top:7px;right:7px;font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:20px;text-transform:uppercase}
+.gal-body{padding:.7rem .8rem}
+.gal-name{font-size:.72rem;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.gal-meta{font-size:.62rem;color:var(--t3);margin-bottom:.4rem}
+.gal-link{font-size:.62rem;color:var(--blue2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;margin-bottom:.45rem}
+.gal-link:hover{text-decoration:underline}
+.gal-unlinked{font-size:.62rem;color:var(--t4);font-style:italic;margin-bottom:.45rem}
+.gal-acts{display:flex;gap:4px}
 
-/* ── VERIFY ── */
-.vwrap{max-width:500px;margin:0 auto}
-.vbox{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);padding:1.1rem;margin-bottom:1.1rem}
-.vbox h3{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
-.vbox p{font-size:.76rem;color:var(--ash);margin-bottom:.8rem}
-.vrow{display:flex;gap:7px}
-.vin{flex:1;background:var(--graphite);border:2px solid var(--steel);border-radius:var(--rsm);padding:10px 12px;color:var(--white);font-family:var(--mono);font-size:.86rem}
-.vin:focus{outline:none;border-color:var(--flame)}
-.vgo{background:linear-gradient(135deg,var(--flame),#e63900);color:#fff;border:none;border-radius:var(--rsm);padding:10px 16px;font-family:var(--font);font-size:.86rem;font-weight:700;white-space:nowrap}
-.vgo:hover{opacity:.9}
-.vresult{background:var(--carbon);border:1px solid var(--graphite);border-radius:var(--r);padding:1.1rem}
-.vbanner{border-radius:var(--rsm);padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:11px}
-.vbanner.approved{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.3)}
-.vbanner.pending{background:rgba(255,214,0,.08);border:1px solid rgba(255,214,0,.3)}
-.vbanner.rejected,.vbanner.notfound{background:rgba(255,23,68,.08);border:1px solid rgba(255,23,68,.25)}
-.vico{font-size:2rem;line-height:1;flex-shrink:0}
-.vtxt h4{font-size:.96rem;font-weight:800;margin-bottom:2px}
-.vbanner.approved .vtxt h4{color:var(--green)}
-.vbanner.pending  .vtxt h4{color:var(--yellow)}
-.vbanner.rejected .vtxt h4,.vbanner.notfound .vtxt h4{color:var(--red)}
-.vtxt p{font-size:.75rem;color:var(--ash)}
-.vdg{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
-.vf label{display:block;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);margin-bottom:2px}
-.vf span{font-size:.8rem;color:var(--white)}
-.vacts{display:flex;gap:7px;margin-top:.8rem}
-.vacts .btn{flex:1;padding:10px;font-size:.8rem}
+/* ─── VERIFY ─── */
+.verify-wrap{max-width:520px;margin:0 auto}
+.verify-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--sh-card)}
+.verify-card h3{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+.verify-card p{font-size:.76rem;color:var(--t2);margin-bottom:.8rem}
+.verify-row{display:flex;gap:.5rem}
+.verify-inp{flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r2);padding:9px 12px;color:var(--t1);font-family:var(--fm);font-size:.83rem}
+.verify-inp:focus{outline:none;border-color:rgba(255,92,26,.5)}
+.verify-inp::placeholder{color:var(--t3)}
+.verify-btn{background:var(--flame);color:#fff;border:none;border-radius:var(--r2);padding:9px 18px;font-family:var(--fn);font-size:.83rem;font-weight:700;cursor:pointer;transition:opacity .14s;white-space:nowrap}
+.verify-btn:hover{opacity:.9}
+/* verify result */
+.v-banner{border-radius:var(--r2);padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px}
+.v-banner.approved{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2)}
+.v-banner.pending{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2)}
+.v-banner.rejected,.v-banner.notfound{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2)}
+.v-ico{font-size:1.8rem;flex-shrink:0}
+.v-title{font-size:.9rem;font-weight:800;margin-bottom:2px}
+.approved .v-title{color:var(--green2)}
+.pending  .v-title{color:var(--amber)}
+.rejected .v-title,.notfound .v-title{color:var(--red2)}
+.v-msg{font-size:.74rem;color:var(--t2)}
+.v-dg{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.75rem}
+.v-field label{display:block;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:2px}
+.v-field span{font-size:.79rem;color:var(--t1)}
+.v-acts{display:flex;gap:.5rem;margin-top:.75rem}
+.v-acts .btn{flex:1;justify-content:center}
 
-/* ── EMPTY/LOAD ── */
-.empty{text-align:center;padding:2.5rem 1rem;color:var(--ash)}
-.ei{font-size:2.5rem;margin-bottom:.75rem}
-.et{font-size:.85rem}
-.loading{text-align:center;padding:1.75rem;color:var(--ash);font-size:.83rem}
-.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--steel);border-top-color:var(--flame);border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes rot{to{transform:rotate(360deg)}}
+/* ─── EMPTY / LOADING ─── */
+.empty-state{text-align:center;padding:3.5rem 1rem;color:var(--t3)}
+.empty-ico{font-size:2.8rem;margin-bottom:.75rem;opacity:.5}
+.empty-txt{font-size:.85rem;margin-bottom:.5rem}
+.empty-sub{font-size:.74rem;color:var(--t4)}
+.loader{text-align:center;padding:2.5rem;color:var(--t3);font-size:.82rem}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--flame);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--green);color:#000;padding:7px 16px;border-radius:50px;font-size:.78rem;font-weight:700;z-index:9999;opacity:0;transition:all .26s;pointer-events:none;white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis}
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--card);border:1px solid var(--border2);color:var(--t1);
+  padding:8px 16px;border-radius:20px;font-size:.77rem;font-weight:600;
+  z-index:2000;opacity:0;transition:all .24s;pointer-events:none;
+  white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);display:flex;align-items:center;gap:6px;
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.err{background:var(--red);color:#fff}
+.toast .t-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.toast.ok .t-dot{background:var(--green2)}
+.toast.err .t-dot{background:var(--red)}
 
-/* ── MOBILE BOTTOM NAV ── */
-.mobnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink);border-top:1px solid var(--graphite);z-index:200;height:var(--nav-h);grid-template-columns:repeat(5,1fr)}
-.mni{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ash);font-size:.54rem;font-weight:700;cursor:pointer;padding:5px 2px;text-transform:uppercase;letter-spacing:.04em;border-top:2px solid transparent;transition:all .14s;position:relative}
-.mni.on{color:var(--amber);border-top-color:var(--flame)}
-.mbadge{position:absolute;top:3px;right:calc(50% - 16px);background:var(--flame);color:#000;border-radius:50px;padding:1px 4px;font-size:.5rem;font-weight:800;min-width:14px;text-align:center}
+/* ─── MOBILE NAV ─── */
+.mobnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;height:var(--nav);grid-template-columns:repeat(5,1fr)}
+.mni{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t3);font-size:.52rem;font-weight:700;cursor:pointer;padding:5px 2px;text-transform:uppercase;letter-spacing:.04em;border-top:2px solid transparent;transition:all .13s;position:relative}
+.mni.active{color:var(--flame2);border-top-color:var(--flame)}
+.mni svg{flex-shrink:0}
+.mn-badge{position:absolute;top:3px;right:calc(50% - 18px);background:var(--red);color:#fff;border-radius:20px;padding:1px 4px;font-size:.5rem;font-weight:800;min-width:14px;text-align:center}
 
-/* ── RESPONSIVE ── */
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+}
 @media(max-width:768px){
   .app{grid-template-columns:1fr}
   .sidebar{display:none}
   .mobnav{display:grid}
-  .content{padding:.85rem;padding-bottom:calc(var(--nav-h) + .85rem)}
-  .topbar{padding:.7rem .9rem}
-  .stats{grid-template-columns:1fr 1fr;gap:.6rem}
-  .sc-val{font-size:1.5rem}
-  .fbar{gap:5px}
-  .fbtn{padding:5px 10px;font-size:.72rem}
-  .twrap{display:none}
-  .mlist{display:flex}
-  .dg{grid-template-columns:1fr}
-  .cgrid{grid-template-columns:1fr}
-  .vdg{grid-template-columns:1fr}
-  .ggrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
-  .toast{bottom:calc(var(--nav-h) + 10px)}
-  .vwrap{max-width:100%}
-  .modal.wide{max-width:100%}
+  .content{padding:.85rem;padding-bottom:calc(var(--nav) + .85rem)}
+  .topbar{padding:.7rem 1rem}
+  .stats-row{grid-template-columns:1fr 1fr;gap:.6rem}
+  .stat-val{font-size:1.4rem}
+  .tbl-wrap{display:none}
+  .card-grid{display:flex}
+  .det-grid{grid-template-columns:1fr}
+  .cmp-cols{grid-template-columns:1fr}
+  .v-dg{grid-template-columns:1fr}
+  .gal-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
+  .toast{bottom:calc(var(--nav) + 10px)}
+  .verify-wrap{max-width:100%}
+  .modal-lg{max-width:100%}
+  .toolbar{gap:.5rem}
+  .toolbar-actions{width:100%;justify-content:flex-end}
+}
+@media(min-width:769px){
+  .toast{bottom:20px}
 }
 </style>
 </head>
@@ -272,111 +379,181 @@ input[type=checkbox]{accent-color:var(--flame);width:14px;height:14px;cursor:poi
 
 <div class="app">
 
-<!-- ═══ SIDEBAR ═══ -->
+<!-- ═════ SIDEBAR ═════ -->
 <aside class="sidebar">
-  <div class="sb-logo">
-    <h2>🎬 MOVIE TIME</h2>
-    <p>Admin Dashboard · 2026</p>
+  <div class="sb-brand">
+    <div class="sb-brand-icon">🎬</div>
+    <div class="sb-brand-text">
+      <div class="sb-brand-name">Movie Time</div>
+      <div class="sb-brand-sub">Festival 2026 · Admin</div>
+    </div>
   </div>
   <nav class="sb-nav">
-    <div class="sb-sep">Bookings</div>
-    <div class="sb-item on" id="sb-bookings" onclick="goPage('bookings',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <div class="sb-section">Bookings</div>
+    <div class="sb-item active" id="sb-bookings" onclick="goPage('bookings',this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       All Bookings
-      <span class="sb-badge" id="sb-pend">0</span>
+      <span class="sb-badge orange" id="sb-pend">0</span>
     </div>
     <div class="sb-item" id="sb-approved" onclick="goPage('approved',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Approved
     </div>
     <div class="sb-item" id="sb-rejected" onclick="goPage('rejected',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
       Rejected
     </div>
-    <div class="sb-sep">Tools</div>
+    <div class="sb-divider"></div>
+    <div class="sb-section">Tools</div>
     <div class="sb-item" id="sb-screenshots" onclick="goPage('screenshots',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       Screenshots
-      <span class="sb-badge bl" id="sb-ssc">0</span>
+      <span class="sb-badge blue" id="sb-ssc">0</span>
     </div>
     <div class="sb-item" id="sb-verify" onclick="goPage('verify',this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Ticket Verify
     </div>
   </nav>
-  <div class="sb-foot">Movie Time Festival 2026 · Admin</div>
-</aside>
-
-<!-- ═══ MAIN ═══ -->
-<div class="main">
-  <div class="topbar">
-    <h1 id="ptitle">All Bookings</h1>
-    <div class="topbar-r">
-      <span class="badge-admin">Admin</span>
-      <button class="btn-refresh" onclick="loadBookings()">↻ Refresh</button>
+  <div class="sb-foot">
+    <div class="sb-foot-row">
+      <div class="sb-foot-dot"></div>
+      <div class="sb-foot-txt">Live &nbsp;·&nbsp; Auto-refresh 60s</div>
     </div>
   </div>
+</aside>
+
+<!-- ═════ MAIN ═════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="ptitle">All Bookings</h1>
+    </div>
+    <div class="topbar-right">
+      <span class="pill-admin">Admin</span>
+      <button class="btn-icon" onclick="loadBookings()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
   <div class="content">
 
-    <!-- PAGE: BOOKINGS -->
+    <!-- ── PAGE: BOOKINGS ── -->
     <div class="page active" id="page-bookings">
-      <div class="stats" id="stats-area">
-        <div class="sc hi"><div class="sc-lbl">💰 Income</div><div class="sc-val gc" id="st-income">₹0</div><div class="sc-sub">Approved only</div></div>
-        <div class="sc hi"><div class="sc-lbl">🎟️ Sells</div><div class="sc-val oc" id="st-sells">0</div><div class="sc-sub">Tickets sold</div></div>
-        <div class="sc"><div class="sc-lbl">Total</div><div class="sc-val oc" id="st-total">—</div></div>
-        <div class="sc"><div class="sc-lbl">Pending</div><div class="sc-val yc" id="st-pend">—</div></div>
-        <div class="sc"><div class="sc-lbl">Approved</div><div class="sc-val gc" id="st-appr">—</div></div>
-        <div class="sc"><div class="sc-lbl">Rejected</div><div class="sc-val rc" id="st-reje">—</div></div>
-      </div>
-      <div class="cbar hidden" id="cbar">
-        <span class="cbar-lbl">⚖️ Compare:</span>
-        <div class="ctags" id="ctags"></div>
-        <div class="cacts">
-          <button class="btn ba" id="cgo-btn" onclick="openCmp()" disabled>Pick 1 more</button>
-          <button class="btn bv" onclick="clearCmp()">✕ Clear</button>
+
+      <div class="stats-row">
+        <div class="stat s-income">
+          <div class="stat-ico">💰</div>
+          <div class="stat-lbl">Ticket Income</div>
+          <div class="stat-val v-green" id="st-income">₹0</div>
+          <div class="stat-sub">Approved bookings</div>
+        </div>
+        <div class="stat s-sells">
+          <div class="stat-ico">🎟️</div>
+          <div class="stat-lbl">Tickets Sold</div>
+          <div class="stat-val v-orange" id="st-sells">0</div>
+          <div class="stat-sub">Total quantity</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Total Bookings</div>
+          <div class="stat-val v-orange" id="st-total">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Pending</div>
+          <div class="stat-val v-yellow" id="st-pend">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Approved</div>
+          <div class="stat-val v-green" id="st-appr">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Rejected</div>
+          <div class="stat-val v-red" id="st-reje">—</div>
         </div>
       </div>
-      <div class="fbar">
-        <button class="fbtn on" id="fb-all"      onclick="setFilt('all',this)">All</button>
-        <button class="fbtn"    id="fb-pending"  onclick="setFilt('pending',this)">⏳ Pending</button>
-        <button class="fbtn"    id="fb-approved" onclick="setFilt('approved',this)">✅ Approved</button>
-        <button class="fbtn"    id="fb-rejected" onclick="setFilt('rejected',this)">❌ Rejected</button>
-        <input class="search" type="text" placeholder="Search name / email / ID / UTR…" oninput="doSearch(this.value)">
+
+      <!-- compare bar -->
+      <div class="cmp-bar hidden" id="cmp-bar">
+        <span class="cmp-bar-lbl">⚖️ Compare</span>
+        <div class="cmp-tags" id="cmp-tags"></div>
+        <div class="cmp-bar-acts">
+          <button class="btn btn-amber btn-sm" id="cmp-go" onclick="openCmp()" disabled>Pick 1 more</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearCmp()">✕ Clear</button>
+        </div>
       </div>
-      <div id="t-main"></div>
-      <div class="mlist" id="m-main"></div>
+
+      <!-- selection bar (shown when rows checked) -->
+      <div class="sel-bar hidden" id="sel-bar">
+        <span class="sel-bar-info" id="sel-info">0 selected</span>
+        <div class="sel-bar-acts">
+          <button class="btn btn-ghost btn-sm" onclick="selAll(false)">Deselect all</button>
+          <button class="btn btn-red btn-sm" onclick="askBulkDel()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Delete Selected
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-tabs">
+          <button class="ftab active" id="ft-all"      onclick="setFilt('all',this)">All</button>
+          <button class="ftab"        id="ft-pending"  onclick="setFilt('pending',this)">Pending</button>
+          <button class="ftab"        id="ft-approved" onclick="setFilt('approved',this)">Approved</button>
+          <button class="ftab"        id="ft-rejected" onclick="setFilt('rejected',this)">Rejected</button>
+        </div>
+        <div class="search-wrap">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-inp" type="text" placeholder="Search name, email, ID, UTR…" oninput="doSearch(this.value)">
+        </div>
+        <div class="toolbar-actions">
+          <button class="btn btn-danger-outline btn-sm" onclick="askClearAll()" id="clear-all-btn">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <div class="tbl-wrap" id="tbl-main-wrap">
+        <div id="tbl-main"><div class="loader"><span class="spin"></span>Loading bookings…</div></div>
+      </div>
+      <div class="card-grid" id="cards-main"></div>
     </div>
 
-    <!-- PAGE: APPROVED -->
+    <!-- ── PAGE: APPROVED ── -->
     <div class="page" id="page-approved">
-      <div id="t-approved"></div>
-      <div class="mlist" id="m-approved"></div>
+      <div class="tbl-wrap"><div id="tbl-approved"><div class="loader"><span class="spin"></span>Loading…</div></div></div>
+      <div class="card-grid" id="cards-approved"></div>
     </div>
 
-    <!-- PAGE: REJECTED -->
+    <!-- ── PAGE: REJECTED ── -->
     <div class="page" id="page-rejected">
-      <div id="t-rejected"></div>
-      <div class="mlist" id="m-rejected"></div>
+      <div class="tbl-wrap"><div id="tbl-rejected"><div class="loader"><span class="spin"></span>Loading…</div></div></div>
+      <div class="card-grid" id="cards-rejected"></div>
     </div>
 
-    <!-- PAGE: SCREENSHOTS -->
+    <!-- ── PAGE: SCREENSHOTS ── -->
     <div class="page" id="page-screenshots">
-      <div class="gbar">
-        <span id="ginfo" style="font-size:.78rem;color:var(--ash)">Loading…</span>
-        <button class="btn-refresh" onclick="loadSS()">↻ Refresh</button>
+      <div class="gal-bar">
+        <span id="gal-info" style="font-size:.8rem;color:var(--t3)">Loading…</span>
+        <button class="btn btn-ghost btn-sm" onclick="loadSS()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
       </div>
-      <div id="garea"><div class="loading"><span class="spin"></span> Loading…</div></div>
+      <div id="gal-area"><div class="loader"><span class="spin"></span>Loading screenshots…</div></div>
     </div>
 
-    <!-- PAGE: VERIFY -->
+    <!-- ── PAGE: VERIFY ── -->
     <div class="page" id="page-verify">
-      <div class="vwrap">
-        <div class="vbox">
+      <div class="verify-wrap">
+        <div class="verify-card">
           <h3>🔍 Ticket Verifier</h3>
-          <p>Enter a Booking ID or UTR to instantly check ticket status.</p>
-          <div class="vrow">
-            <input class="vin" type="text" id="vin" placeholder="Booking ID or UTR…" onkeydown="if(event.key==='Enter')doVerify()">
-            <button class="vgo" onclick="doVerify()">Verify</button>
+          <p>Enter a Booking ID or UTR / Transaction ID to verify instantly.</p>
+          <div class="verify-row">
+            <input class="verify-inp" type="text" id="vin" placeholder="Booking ID or UTR number…" onkeydown="if(event.key==='Enter')doVerify()">
+            <button class="verify-btn" onclick="doVerify()">Verify</button>
           </div>
         </div>
         <div class="hidden" id="vres"></div>
@@ -387,100 +564,114 @@ input[type=checkbox]{accent-color:var(--flame);width:14px;height:14px;cursor:poi
 </div><!-- /main -->
 </div><!-- /app -->
 
-<!-- ═══ MOBILE BOTTOM NAV ═══ -->
+<!-- ═════ MOBILE NAV ═════ -->
 <nav class="mobnav">
-  <div class="mni on" id="mn-bookings"    onclick="goPage('bookings',this)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-    Bookings<span class="mbadge hidden" id="mb-pend"></span>
+  <div class="mni active" id="mn-bookings" onclick="goPage('bookings',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Bookings<span class="mn-badge hidden" id="mn-pend"></span>
   </div>
-  <div class="mni" id="mn-approved"  onclick="goPage('approved',this)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <div class="mni" id="mn-approved" onclick="goPage('approved',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     Approved
   </div>
-  <div class="mni" id="mn-rejected"  onclick="goPage('rejected',this)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+  <div class="mni" id="mn-rejected" onclick="goPage('rejected',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     Rejected
   </div>
   <div class="mni" id="mn-screenshots" onclick="goPage('screenshots',this)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
     Photos
   </div>
   <div class="mni" id="mn-verify" onclick="goPage('verify',this)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Verify
   </div>
 </nav>
 
-<!-- ═══ DETAIL MODAL ═══ -->
-<div class="ov hidden" id="ov-detail">
-  <div class="modal">
-    <div class="mh"><h3 id="det-title">Booking Details</h3><button class="mx" onclick="closeDet()">✕</button></div>
-    <div class="mb">
-      <div class="dg" id="det-fields"></div>
-      <div class="ss-blk hidden" id="det-ss-wrap">
-        <div class="ss-lbl">Payment Screenshot</div>
-        <img id="det-ss-img" class="ss-img" src="" onclick="openLB_id('det')" alt="Payment Screenshot">
-        <div class="ss-hint">Tap to enlarge &nbsp;·&nbsp; <a id="det-ss-link" href="#" target="_blank">Open original ↗</a></div>
+<!-- ═════ DETAIL MODAL ═════ -->
+<div class="ov hidden" id="ov-det">
+  <div class="modal modal-md">
+    <div class="modal-hd">
+      <div><h3 id="det-title">Booking Details</h3><div class="modal-sub" id="det-sub"></div></div>
+      <button class="modal-x" onclick="closeDet()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="det-grid" id="det-fields"></div>
+      <div class="ss-block hidden" id="det-ss-wrap">
+        <div class="ss-block-lbl">Payment Screenshot</div>
+        <img id="det-ss-img" class="ss-img" src="" onclick="openLB_id('det')" alt="Payment screenshot">
+        <div class="ss-hint">
+          <span>Tap to zoom</span>
+          <a id="det-ss-link" href="#" target="_blank">Open original ↗</a>
+        </div>
       </div>
     </div>
-    <div class="ma">
-      <button class="btn ba blg" id="det-approve" onclick="detAction('approved')">✅ Approve</button>
-      <button class="btn br blg" id="det-reject"  onclick="detAction('rejected')">❌ Reject</button>
-      <button class="btn bs blg hidden" id="det-ss-btn" onclick="openLB_id('det')">🖼 Screenshot</button>
-      <button class="btn bv blg" onclick="closeDet()">Close</button>
+    <div class="modal-ft">
+      <button class="btn btn-green btn-lg" id="det-approve" onclick="detAction('approved')">✅ Approve</button>
+      <button class="btn btn-red   btn-lg" id="det-reject"  onclick="detAction('rejected')">❌ Reject</button>
+      <button class="btn btn-blue  btn-lg hidden" id="det-ss-btn" onclick="openLB_id('det')">🖼 Screenshot</button>
+      <button class="btn btn-ghost btn-lg" onclick="closeDet()">Close</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ LIGHTBOX ═══ -->
+<!-- ═════ LIGHTBOX ═════ -->
 <div id="lb" class="hidden">
-  <button class="lbx" onclick="closeLB()">✕</button>
+  <button class="lb-x" onclick="closeLB()">✕</button>
   <img id="lb-img" src="" alt="Screenshot" onclick="toggleZoom()">
-  <div class="lb-info" id="lb-info">Tap image to zoom</div>
+  <div class="lb-caption" id="lb-cap">Tap to zoom</div>
   <div class="lb-bar">
-    <button class="lbbtn bl" id="lb-orig">↗ Open Original</button>
-    <button class="lbbtn" onclick="toggleZoom()">🔍 Zoom</button>
-    <button class="lbbtn" onclick="closeLB()">Close</button>
+    <button class="lb-btn blue" id="lb-orig">↗ Open Full Size</button>
+    <button class="lb-btn" onclick="toggleZoom()">🔍 Toggle Zoom</button>
+    <button class="lb-btn" onclick="closeLB()">✕ Close</button>
   </div>
 </div>
 
-<!-- ═══ COMPARE MODAL ═══ -->
+<!-- ═════ COMPARE MODAL ═════ -->
 <div class="ov hidden" id="ov-cmp">
-  <div class="modal wide">
-    <div class="mh"><h3>⚖️ Side-by-Side Comparison</h3><button class="mx" onclick="closeCmp()">✕</button></div>
-    <div class="mb"><div class="cgrid" id="cgrid"></div></div>
+  <div class="modal modal-lg">
+    <div class="modal-hd">
+      <h3>⚖️ Side-by-Side Comparison</h3>
+      <button class="modal-x" onclick="closeOv('ov-cmp')">✕</button>
+    </div>
+    <div class="modal-body"><div class="cmp-cols" id="cmp-grid"></div></div>
   </div>
 </div>
 
-<!-- ═══ CONFIRM MODAL ═══ -->
-<div class="ov hidden" id="ov-confirm">
-  <div class="modal sm">
-    <div class="mh"><h3 id="cf-title">Confirm</h3><button class="mx" onclick="closeCf()">✕</button></div>
-    <div class="cfbody">
-      <div class="cficon" id="cf-icon">⚠️</div>
-      <h4 id="cf-h">Are you sure?</h4>
-      <p id="cf-p"></p>
+<!-- ═════ CONFIRM DELETE MODAL ═════ -->
+<div class="ov hidden" id="ov-cf">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <h3 id="cf-title">Confirm Delete</h3>
+      <button class="modal-x" onclick="closeOv('ov-cf')">✕</button>
     </div>
-    <div class="cfacts">
-      <button class="btn bdanger blg" id="cf-ok" onclick="cfYes()">Confirm</button>
-      <button class="btn bv blg" onclick="closeCf()">Cancel</button>
+    <div class="cf-body">
+      <div class="cf-ico" id="cf-ico">🗑️</div>
+      <h4 id="cf-h">Delete this booking?</h4>
+      <p id="cf-p">This action is permanent and cannot be undone.</p>
+      <div class="cf-count hidden" id="cf-count"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-red-solid btn-lg" id="cf-ok" onclick="cfOk()">🗑️ Delete</button>
+      <button class="btn btn-ghost btn-lg" onclick="closeOv('ov-cf')">Cancel</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="t-dot"></span><span id="toast-msg"></span></div>
 
 <script>
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  CONFIG
-// ────────────────────────────────────────
-var SB    = 'https://vjxidlnggrpbttxmrfch.supabase.co';
-var KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqeGlkbG5nZ3JwYnR0eG1yZmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjQ2MzYsImV4cCI6MjA4NzAwMDYzNn0.G7OXaE8hi-1ELJAmw_-gLi658henIj2NjIBqFd3HWWo';
-var BUCKET = 'payment-screenshots';
+// ════════════════════════════════════════
+var SB      = 'https://vjxidlnggrpbttxmrfch.supabase.co';
+var KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqeGlkbG5nZ3JwYnR0eG1yZmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjQ2MzYsImV4cCI6MjA4NzAwMDYzNn0.G7OXaE8hi-1ELJAmw_-gLi658henIj2NjIBqFd3HWWo';
+var BUCKET  = 'payment-screenshots';
 var PUBBASE = SB + '/storage/v1/object/public/' + BUCKET + '/';
-var AH = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+var AH      = { apikey: KEY, Authorization: 'Bearer ' + KEY };
 
-// Safely build full public URL from any raw screenshot_url value
+// Resolve raw screenshot_url → full public URL
 function ssUrl(raw) {
   if (!raw) return '';
   if (raw.indexOf('http') === 0) return raw;
@@ -488,692 +679,653 @@ function ssUrl(raw) {
   return PUBBASE + clean;
 }
 
-// ────────────────────────────────────────
-//  GLOBAL CACHES — keys are safe integers
-//  so onclick never embeds unsafe strings
-// ────────────────────────────────────────
-var BK    = {};   // idx -> booking object
-var BKIDS = {};   // id  -> booking object
-var FMAP  = {};   // idx -> {url, name, linked}
+// ════════════════════════════════════════
+//  GLOBAL CACHES (safe integer keys for onclick)
+// ════════════════════════════════════════
+var BK   = {};   // render-index → booking
+var BKID = {};   // id → booking
+var FM   = {};   // file-index → file info
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  STATE
-// ────────────────────────────────────────
-var allBk   = [];
-var filt    = [];
-var curFilt = 'all';
-var curQ    = '';
-var curPage = 'bookings';
-var detBk   = null;    // booking open in detail modal
-var cmpIds  = [];      // compare list
-var cfCb    = null;    // confirm callback
-var lbSrc   = '';      // current lightbox src
+// ════════════════════════════════════════
+var allBk    = [];
+var filt     = [];
+var curFilt  = 'all';
+var curQ     = '';
+var curPage  = 'bookings';
+var detBk    = null;
+var cmpIds   = [];
+var selSet   = new Set();
+var cfCb     = null;
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  BOOT
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 loadBookings();
-fetchSsCount();
+loadSsCount();
 
-// ────────────────────────────────────────
-//  PAGE NAV
-// ────────────────────────────────────────
-function goPage(p, el) {
+// ════════════════════════════════════════
+//  PAGE NAVIGATION
+// ════════════════════════════════════════
+function goPage(p, triggerEl) {
   curPage = p;
-  document.querySelectorAll('.page').forEach(function(x) { x.classList.remove('active'); });
-  document.getElementById('page-' + p).classList.add('active');
-  document.querySelectorAll('.sb-item').forEach(function(x) { x.classList.remove('on'); });
-  document.querySelectorAll('.mni').forEach(function(x) { x.classList.remove('on'); });
-  var sb = document.getElementById('sb-' + p);
-  if (sb) sb.classList.add('on');
-  var mn = document.getElementById('mn-' + p);
-  if (mn) mn.classList.add('on');
-  var titles = { bookings: 'All Bookings', approved: 'Approved', rejected: 'Rejected', screenshots: 'Screenshots', verify: 'Ticket Verifier' };
-  document.getElementById('ptitle').textContent = titles[p] || p;
+  // pages
+  document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
+  $('page-' + p).classList.add('active');
+  // sidebar items
+  document.querySelectorAll('.sb-item').forEach(function(x){ x.classList.remove('active'); });
+  var sb = $('sb-' + p); if (sb) sb.classList.add('active');
+  // mobile nav items
+  document.querySelectorAll('.mni').forEach(function(x){ x.classList.remove('active'); });
+  var mn = $('mn-' + p); if (mn) mn.classList.add('active');
+  // title
+  var titles = { bookings:'All Bookings', approved:'Approved', rejected:'Rejected', screenshots:'Screenshots', verify:'Ticket Verifier' };
+  $('ptitle').textContent = titles[p] || p;
+
   if (p === 'approved')    renderSub('approved');
   if (p === 'rejected')    renderSub('rejected');
   if (p === 'screenshots') loadSS();
 }
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  LOAD BOOKINGS
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 async function loadBookings() {
-  setHTML('t-main', '<div class="loading"><span class="spin"></span> Loading…</div>');
-  setHTML('m-main', '');
+  html('tbl-main', loader());
+  html('cards-main', '');
   try {
     var res = await fetch(SB + '/rest/v1/ticket_bookings?select=*&order=submitted_at.desc', { headers: AH });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     allBk = await res.json();
-    // populate id cache
-    BKIDS = {};
-    allBk.forEach(function(b) { BKIDS[b.id] = b; });
+    BKID  = {};
+    allBk.forEach(function(b){ BKID[b.id] = b; });
     updateStats();
     applyFilt();
     if (curPage === 'approved') renderSub('approved');
     if (curPage === 'rejected') renderSub('rejected');
-  } catch (e) {
-    setHTML('t-main', emptyHTML('⚠️', e.message));
+  } catch(e) {
+    html('tbl-main', emptyState('⚠️', e.message, ''));
   }
 }
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  STATS
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 function updateStats() {
-  var appr = allBk.filter(function(b) { return b.approval_status === 'approved'; });
-  var pend = allBk.filter(function(b) { return b.approval_status === 'pending'; }).length;
-  setText('st-income', '₹' + appr.reduce(function(s, b) { return s + (b.total_amount || 0); }, 0).toLocaleString('en-IN'));
-  setText('st-sells',  appr.reduce(function(s, b) { return s + (b.quantity || 0); }, 0));
-  setText('st-total',  allBk.length);
-  setText('st-pend',   pend);
-  setText('st-appr',   appr.length);
-  setText('st-reje',   allBk.filter(function(b) { return b.approval_status === 'rejected'; }).length);
-  setText('sb-pend',   pend);
-  if (pend > 0) { setText('mb-pend', pend); show('mb-pend'); } else { hide('mb-pend'); }
+  var appr = allBk.filter(function(b){ return b.approval_status === 'approved'; });
+  var pend = allBk.filter(function(b){ return b.approval_status === 'pending'; }).length;
+  txt('st-income', '₹' + appr.reduce(function(s,b){ return s + (b.total_amount||0); }, 0).toLocaleString('en-IN'));
+  txt('st-sells',  appr.reduce(function(s,b){ return s + (b.quantity||0); }, 0));
+  txt('st-total',  allBk.length);
+  txt('st-pend',   pend);
+  txt('st-appr',   appr.length);
+  txt('st-reje',   allBk.filter(function(b){ return b.approval_status === 'rejected'; }).length);
+  txt('sb-pend',   pend);
+  if (pend > 0){ txt('mn-pend', pend); show('mn-pend'); } else { hide('mn-pend'); }
 }
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  FILTER + SEARCH
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 function setFilt(f, el) {
   curFilt = f;
-  document.querySelectorAll('.fbtn').forEach(function(b) { b.classList.remove('on'); });
-  if (el) el.classList.add('on');
+  document.querySelectorAll('.ftab').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
   applyFilt();
 }
 
-function doSearch(v) { curQ = v.toLowerCase(); applyFilt(); }
+function doSearch(v){ curQ = v.toLowerCase(); applyFilt(); }
 
 function applyFilt() {
   filt = allBk.filter(function(b) {
     if (curFilt !== 'all' && b.approval_status !== curFilt) return false;
     if (curQ) {
-      var hay = [b.name, b.email, b.booking_id, b.transaction_id, b.phone].join(' ').toLowerCase();
-      if (hay.indexOf(curQ) === -1) return false;
+      var h = [b.name, b.email, b.booking_id, b.transaction_id, b.phone].join(' ').toLowerCase();
+      if (h.indexOf(curQ) === -1) return false;
     }
     return true;
   });
-  // rebuild BK cache for current filtered set
   BK = {};
-  filt.forEach(function(b, i) { BK[i] = b; });
+  filt.forEach(function(b,i){ BK[i] = b; });
   renderMain();
 }
 
-// ────────────────────────────────────────
-//  RENDER
-// ────────────────────────────────────────
+// ════════════════════════════════════════
+//  RENDER TABLES + CARDS
+// ════════════════════════════════════════
 function renderMain() {
   if (!filt.length) {
-    setHTML('t-main', emptyHTML('🎟️', 'No bookings found.'));
-    setHTML('m-main', emptyHTML('🎟️', 'No bookings found.'));
+    var msg = curQ || curFilt !== 'all' ? 'No results match your search.' : 'No bookings yet.';
+    html('tbl-main', emptyState('🎟️', msg, ''));
+    html('cards-main', emptyState('🎟️', msg, ''));
     return;
   }
-  setHTML('t-main', buildTable(filt));
-  setHTML('m-main', buildCards(filt));
+  html('tbl-main', buildTable(filt));
+  html('cards-main', buildCards(filt));
 }
 
 function renderSub(status) {
-  var rows = allBk.filter(function(b) { return b.approval_status === status; });
+  var rows = allBk.filter(function(b){ return b.approval_status === status; });
   var ico  = status === 'approved' ? '✅' : '❌';
-  setHTML('t-' + status, rows.length ? buildTable(rows) : emptyHTML(ico, 'No ' + status + ' bookings.'));
-  setHTML('m-' + status, rows.length ? buildCards(rows) : emptyHTML(ico, 'No ' + status + ' bookings.'));
+  var msg  = 'No ' + status + ' bookings.';
+  html('tbl-' + status,   rows.length ? buildTable(rows) : emptyState(ico, msg, ''));
+  html('cards-' + status, rows.length ? buildCards(rows) : emptyState(ico, msg, ''));
 }
 
-// Desktop table — onclick uses safe index into BK cache
+// ── Desktop Table ──
 function buildTable(rows) {
-  var ths = '<thead><tr>' +
-    '<th style="width:32px"><input type="checkbox" title="Select all" onchange="selAll(this)"></th>' +
+  var head = '<thead><tr>' +
+    '<th><input type="checkbox" title="Select all" onchange="selAllRows(this)" id="chk-all"></th>' +
     '<th>#</th><th>Booking ID</th><th>Name</th><th>Email</th>' +
-    '<th>Qty</th><th>Amount</th><th>UTR</th><th>Date</th><th>Status</th><th>Actions</th>' +
+    '<th>Qty</th><th>Amount</th><th>UTR</th><th>Submitted</th><th>Status</th><th>Actions</th>' +
     '</tr></thead>';
-  var trs = rows.map(function(b, i) {
-    BK[i] = b; // ensure fresh map
-    var dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  var body = rows.map(function(b, i) {
+    BK[i] = b;
+    var dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}) : '—';
     var pnd = b.approval_status === 'pending';
-    var sel = cmpIds.indexOf(b.id) !== -1;
+    var inC = cmpIds.indexOf(b.id) !== -1;
+    var inS = selSet.has(b.id);
     var url = ssUrl(b.screenshot_url);
-    return '<tr>' +
-      '<td><input type="checkbox" data-id="' + esc(b.id) + '" onchange="selRow(this)"></td>' +
-      '<td style="color:var(--ash)">' + (i + 1) + '</td>' +
-      '<td><span class="mono">' + esc(b.booking_id || '—') + '</span></td>' +
-      '<td class="nc">' + esc(b.name || '—') + '</td>' +
-      '<td class="ec">' + esc(b.email || '—') + '</td>' +
-      '<td style="text-align:center;font-weight:700">' + (b.quantity || '—') + '</td>' +
-      '<td style="color:var(--amber);font-weight:700">₹' + (b.total_amount || '—') + '</td>' +
-      '<td><span class="mono">' + esc(b.transaction_id || '—') + '</span></td>' +
-      '<td style="color:var(--ash);font-size:.73rem">' + dt + '</td>' +
+    return '<tr class="' + (inS ? 'selected' : '') + '" id="row-' + esc(b.id) + '">' +
+      '<td><input type="checkbox" data-id="' + esc(b.id) + '" onchange="onRowChk(this)" ' + (inS ? 'checked' : '') + '></td>' +
+      '<td style="color:var(--t3);font-size:.72rem">' + (i+1) + '</td>' +
+      '<td><span class="td-mono">' + esc(b.booking_id||'—') + '</span></td>' +
+      '<td class="td-name">' + esc(b.name||'—') + '</td>' +
+      '<td class="td-muted">' + esc(b.email||'—') + '</td>' +
+      '<td style="font-weight:700;text-align:center">' + (b.quantity||'—') + '</td>' +
+      '<td class="td-amt">₹' + (b.total_amount||'—') + '</td>' +
+      '<td><span class="td-mono">' + esc(b.transaction_id||'—') + '</span></td>' +
+      '<td style="font-size:.72rem;color:var(--t3)">' + dt + '</td>' +
       '<td>' + mkPill(b.approval_status) + '</td>' +
-      '<td><div class="acts">' +
-        '<button class="btn bv" onclick="openDet(' + i + ')">👁️</button>' +
-        (url ? '<button class="btn bs" onclick="openLB(' + i + ')">🖼</button>' : '') +
-        '<button class="btn bc' + (sel ? ' on' : '') + '" onclick="togCmp(\'' + esc(b.id) + '\')">⚖️</button>' +
-        (pnd ? '<button class="btn ba" onclick="setStatus(\'' + esc(b.id) + '\',\'approved\')">✅</button>' +
-               '<button class="btn br" onclick="setStatus(\'' + esc(b.id) + '\',\'rejected\')">❌</button>' : '') +
-        '<button class="btn bd" onclick="askDel(\'' + esc(b.id) + '\')">🗑️</button>' +
-      '</div></td>' +
+      '<td>' +
+        '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
+          '<button class="btn btn-ghost btn-sm" onclick="openDet(' + i + ')">👁 View</button>' +
+          (url ? '<button class="btn btn-blue btn-sm" onclick="openLB(' + i + ')">🖼</button>' : '') +
+          '<button class="btn btn-amber btn-sm ' + (inC ? 'on' : '') + '" onclick="togCmp(\'' + esc(b.id) + '\')">⚖️</button>' +
+          (pnd ? '<button class="btn btn-green btn-sm" onclick="doStatus(\'' + esc(b.id) + '\',\'approved\')">✅</button>' +
+                 '<button class="btn btn-red   btn-sm" onclick="doStatus(\'' + esc(b.id) + '\',\'rejected\')">❌</button>' : '') +
+          '<button class="btn btn-red btn-sm" onclick="askDel1(\'' + esc(b.id) + '\')" title="Delete">' +
+            '<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</td>' +
     '</tr>';
   }).join('');
-  return '<div class="twrap"><table>' + ths + '<tbody>' + trs + '</tbody></table></div>';
+  return '<div class="tbl-scroll"><table>' + head + '<tbody>' + body + '</tbody></table></div>';
 }
 
-// Mobile cards
+// ── Mobile Cards ──
 function buildCards(rows) {
   return rows.map(function(b, i) {
     BK[i] = b;
-    var dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+    var dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}) : '—';
     var pnd = b.approval_status === 'pending';
     var url = ssUrl(b.screenshot_url);
-    return '<div class="mcard">' +
-      '<div class="mcard-top">' +
-        '<div><div class="mcard-name">' + esc(b.name || '—') + '</div>' +
-        '<div class="mcard-id">' + esc(b.booking_id || '—') + '</div></div>' +
+    var inS = selSet.has(b.id);
+    return '<div class="bk-card ' + (inS ? 'selected' : '') + '" id="mcard-' + esc(b.id) + '">' +
+      '<div class="bk-card-head">' +
+        '<div>' +
+          '<div class="bk-card-name">' + esc(b.name||'—') + '</div>' +
+          '<div class="bk-card-id">' + esc(b.booking_id||'—') + '</div>' +
+        '</div>' +
         mkPill(b.approval_status) +
       '</div>' +
-      '<div class="mcard-grid">' +
-        mf('Email', esc(b.email || '—')) +
-        mf('Phone', b.phone || '—') +
-        mf('Tickets', b.quantity || '—') +
-        mf('Amount', '₹' + (b.total_amount || '—'), true) +
-        mf('UTR', esc(b.transaction_id || '—')) +
-        mf('Date', dt) +
+      '<div class="bk-card-body">' +
+        bkf('Email',  esc(b.email||'—'),  false) +
+        bkf('Phone',  b.phone||'—',        false) +
+        bkf('Tickets', (b.quantity||'—') + ' tickets', false) +
+        bkf('Amount', '₹' + (b.total_amount||'—'), true) +
+        bkf('UTR',    b.transaction_id||'—', false) +
+        bkf('Date',   dt,                  false) +
       '</div>' +
-      '<div class="acts">' +
-        '<button class="btn bv" onclick="openDet(' + i + ')">👁️ View</button>' +
-        (url ? '<button class="btn bs" onclick="openLB(' + i + ')">🖼 Screenshot</button>' : '') +
-        (pnd ? '<button class="btn ba" onclick="setStatus(\'' + esc(b.id) + '\',\'approved\')">✅</button>' +
-               '<button class="btn br" onclick="setStatus(\'' + esc(b.id) + '\',\'rejected\')">❌</button>' : '') +
+      '<div class="bk-card-foot">' +
+        '<button class="btn btn-ghost btn-sm" onclick="openDet(' + i + ')">👁 View</button>' +
+        (url ? '<button class="btn btn-blue btn-sm" onclick="openLB(' + i + ')">🖼 Screenshot</button>' : '') +
+        (pnd ? '<button class="btn btn-green btn-sm" onclick="doStatus(\'' + esc(b.id) + '\',\'approved\')">✅ Approve</button>' +
+               '<button class="btn btn-red   btn-sm" onclick="doStatus(\'' + esc(b.id) + '\',\'rejected\')">❌ Reject</button>' : '') +
+        '<button class="btn btn-red btn-sm" onclick="askDel1(\'' + esc(b.id) + '\')">🗑 Delete</button>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-function mf(label, val, hi) {
-  return '<div class="mf"><label>' + label + '</label><span' + (hi ? ' class="hi"' : '') + '>' + val + '</span></div>';
+function bkf(label, val, hi) {
+  return '<div class="bk-field"><label>' + label + '</label><span' + (hi ? ' class="hi"' : '') + '>' + val + '</span></div>';
 }
 
 function mkPill(s) {
-  var cls = { pending: 'pp', approved: 'pa', rejected: 'pj' };
-  var ico = { pending: '⏳', approved: '✅', rejected: '❌' };
-  return '<span class="pill ' + (cls[s] || 'pp') + '">' + (ico[s] || '') + ' ' + (s || 'pending') + '</span>';
+  var map = { pending:['pill-pending','⏳'], approved:['pill-approved','✅'], rejected:['pill-rejected','❌'] };
+  var m = map[s] || map.pending;
+  return '<span class="pill ' + m[0] + '"><span class="pill-dot"></span>' + (s||'pending') + '</span>';
 }
 
-// HTML-escape only — safe for HTML attributes and content
 function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ────────────────────────────────────────
-//  CHECKBOXES
-// ────────────────────────────────────────
-var selSet = new Set();
-function selRow(chk) {
+// ════════════════════════════════════════
+//  CHECKBOXES + SELECTION
+// ════════════════════════════════════════
+function onRowChk(chk) {
   var id = chk.getAttribute('data-id');
   if (chk.checked) selSet.add(id); else selSet.delete(id);
-}
-function selAll(chk) {
-  document.querySelectorAll('input[data-id]').forEach(function(c) {
-    c.checked = chk.checked;
-    var id = c.getAttribute('data-id');
-    if (chk.checked) selSet.add(id); else selSet.delete(id);
-  });
+  var row   = document.getElementById('row-' + id);
+  var mcard = document.getElementById('mcard-' + id);
+  if (row)   row.classList.toggle('selected', chk.checked);
+  if (mcard) mcard.classList.toggle('selected', chk.checked);
+  syncSelBar();
 }
 
-// ────────────────────────────────────────
-//  DETAIL MODAL — uses safe integer index
-// ────────────────────────────────────────
+function selAllRows(masterChk) {
+  document.querySelectorAll('input[data-id]').forEach(function(c) {
+    c.checked = masterChk.checked;
+    var id = c.getAttribute('data-id');
+    if (masterChk.checked) selSet.add(id); else selSet.delete(id);
+    var row = document.getElementById('row-' + id);
+    if (row) row.classList.toggle('selected', masterChk.checked);
+  });
+  syncSelBar();
+}
+
+function selAll(on) {
+  selSet.clear();
+  document.querySelectorAll('input[data-id]').forEach(function(c) {
+    c.checked = on;
+    if (on) selSet.add(c.getAttribute('data-id'));
+    var row = document.getElementById('row-' + c.getAttribute('data-id'));
+    if (row) row.classList.toggle('selected', on);
+  });
+  var mc = document.getElementById('chk-all'); if (mc) mc.checked = on;
+  syncSelBar();
+}
+
+function syncSelBar() {
+  var n = selSet.size;
+  if (n > 0) {
+    txt('sel-info', n + ' booking' + (n > 1 ? 's' : '') + ' selected');
+    show('sel-bar');
+  } else {
+    hide('sel-bar');
+  }
+}
+
+// ════════════════════════════════════════
+//  DETAIL MODAL
+// ════════════════════════════════════════
 function openDet(idx) {
-  var b = BK[idx];
-  if (!b) return;
+  var b = BK[idx]; if (!b) return;
   detBk = b;
 
-  document.getElementById('det-title').textContent = 'Booking — ' + (b.booking_id || b.id);
+  txt('det-title', 'Booking — ' + (b.booking_id || ''));
+  txt('det-sub', mkPill(b.approval_status));
+  // swap innerHTML for sub since it has HTML
+  $('det-sub').innerHTML = mkPill(b.approval_status);
 
   var pairs = [
     ['Name', b.name], ['Email', b.email],
     ['Phone', b.phone], ['Booking ID', b.booking_id],
-    ['Tickets', (b.quantity || '—') + ' × ₹100'], ['Total', '₹' + (b.total_amount || '—')],
-    ['Event', b.event_name], ['Date & Time', (b.event_date || '—') + ' · ' + (b.event_time || '—')],
+    ['Tickets', (b.quantity||'—') + ' × ₹100'], ['Total Amount', '₹' + (b.total_amount||'—')],
+    ['Event', b.event_name], ['Date & Time', (b.event_date||'—') + ' · ' + (b.event_time||'—')],
     ['Venue', b.venue], ['UTR / Transaction ID', b.transaction_id],
     ['Status', b.approval_status],
-    ['Submitted', b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN') : '—']
+    ['Submitted At', b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN') : '—']
   ];
-
-  setHTML('det-fields', pairs.map(function(p, i) {
-    return '<div class="di' + (i >= pairs.length - 2 ? ' w' : '') + '">' +
-      '<label>' + p[0] + '</label><span>' + esc(String(p[1] == null ? '—' : p[1])) + '</span></div>';
+  html('det-fields', pairs.map(function(p, i) {
+    return '<div class="det-field' + (i >= pairs.length - 2 ? ' span2' : '') + '">' +
+      '<label>' + p[0] + '</label>' +
+      '<span>' + esc(String(p[1] == null ? '—' : p[1])) + '</span></div>';
   }).join(''));
 
   var url = ssUrl(b.screenshot_url);
   if (url) {
-    document.getElementById('det-ss-img').src  = url;
-    document.getElementById('det-ss-link').href = url;
-    show('det-ss-wrap');
-    show('det-ss-btn');
+    $('det-ss-img').src   = url;
+    $('det-ss-link').href = url;
+    show('det-ss-wrap'); show('det-ss-btn');
   } else {
-    hide('det-ss-wrap');
-    hide('det-ss-btn');
+    hide('det-ss-wrap'); hide('det-ss-btn');
   }
 
   var pnd = b.approval_status === 'pending';
-  document.getElementById('det-approve').style.display = pnd ? '' : 'none';
-  document.getElementById('det-reject').style.display  = pnd ? '' : 'none';
-  show('ov-detail');
+  $('det-approve').style.display = pnd ? '' : 'none';
+  $('det-reject').style.display  = pnd ? '' : 'none';
+  show('ov-det');
 }
 
-function closeDet() { hide('ov-detail'); detBk = null; }
-
+function closeDet() { hide('ov-det'); detBk = null; }
 async function detAction(status) {
   if (!detBk) return;
-  var id = detBk.id;
-  closeDet();
-  await setStatus(id, status);
+  var id = detBk.id; closeDet();
+  await doStatus(id, status);
 }
 
-// ────────────────────────────────────────
-//  LIGHTBOX — safe integer-based open
-// ────────────────────────────────────────
-// openLB(idx) uses BK[idx].screenshot_url — no string embedding
+// ════════════════════════════════════════
+//  LIGHTBOX
+// ════════════════════════════════════════
 function openLB(idx) {
-  var b = BK[idx];
-  if (!b) return;
-  var url = ssUrl(b.screenshot_url);
-  if (!url) return;
-  _openLBSrc(url, b.name || '');
+  var b = BK[idx]; if (!b) return;
+  var url = ssUrl(b.screenshot_url); if (!url) return;
+  _lb(url, b.name || '');
 }
-
-// openLB_id('det') reads from already-set img.src — no string embedding
 function openLB_id(prefix) {
-  var img = document.getElementById(prefix + '-ss-img');
-  if (!img || !img.src) return;
-  _openLBSrc(img.src, '');
+  var img = $(prefix + '-ss-img'); if (!img || !img.src) return;
+  _lb(img.src, '');
 }
-
-// openLB_f(fidx) opens a file from FMAP
 function openLB_f(fidx) {
-  var f = FMAP[fidx];
-  if (!f) return;
-  _openLBSrc(f.url, f.name);
+  var f = FM[fidx]; if (!f) return;
+  _lb(f.url, f.name);
 }
-
-function _openLBSrc(src, label) {
-  lbSrc = src;
-  document.getElementById('lb-img').src = src;
-  document.getElementById('lb-img').classList.remove('zm');
-  document.getElementById('lb-info').textContent = (label ? label + ' — ' : '') + 'Tap image to zoom';
-  document.getElementById('lb-orig').onclick = function() { window.open(src, '_blank'); };
+function _lb(src, label) {
+  $('lb-img').src = src;
+  $('lb-img').classList.remove('zm');
+  txt('lb-cap', (label ? label + ' — ' : '') + 'Click to zoom · Scroll when zoomed');
+  $('lb-orig').onclick = function(){ window.open(src, '_blank'); };
   show('lb');
   document.body.style.overflow = 'hidden';
 }
-
-function closeLB() {
-  hide('lb');
-  document.getElementById('lb-img').classList.remove('zm');
-  document.body.style.overflow = '';
-}
-
+function closeLB() { hide('lb'); $('lb-img').classList.remove('zm'); document.body.style.overflow = ''; }
 function toggleZoom() {
-  var img = document.getElementById('lb-img');
+  var img = $('lb-img');
   img.classList.toggle('zm');
-  document.getElementById('lb-info').textContent = img.classList.contains('zm') ? 'Zoomed — tap to zoom out' : 'Tap image to zoom';
+  txt('lb-cap', img.classList.contains('zm') ? 'Zoomed — click to zoom out' : 'Click to zoom');
 }
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  COMPARE
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 function togCmp(id) {
-  var idx = cmpIds.indexOf(id);
-  if (idx !== -1) {
-    cmpIds.splice(idx, 1);
-  } else {
-    if (cmpIds.length >= 2) { toast('Max 2 bookings for compare.', true); return; }
+  var i = cmpIds.indexOf(id);
+  if (i !== -1) { cmpIds.splice(i, 1); }
+  else {
+    if (cmpIds.length >= 2) { toast('Max 2 bookings for compare', true); return; }
     cmpIds.push(id);
   }
-  syncCbar();
-  applyFilt(); // re-render so button state updates
+  syncCmpBar(); applyFilt();
 }
-
-function syncCbar() {
-  var bar = document.getElementById('cbar');
-  var btn = document.getElementById('cgo-btn');
-  if (!cmpIds.length) { hide('cbar'); return; }
-  show('cbar');
-  setHTML('ctags', cmpIds.map(function(id) {
-    var b = BKIDS[id];
-    return '<span class="ctag">' + esc(b ? (b.booking_id || b.name || id.slice(0, 8)) : id.slice(0, 8)) + '</span>';
+function syncCmpBar() {
+  if (!cmpIds.length) { hide('cmp-bar'); return; }
+  show('cmp-bar');
+  html('cmp-tags', cmpIds.map(function(id) {
+    var b = BKID[id];
+    return '<span class="cmp-tag">' + esc(b ? (b.booking_id||b.name||id.slice(0,8)) : id.slice(0,8)) + '</span>';
   }).join(''));
-  btn.disabled    = cmpIds.length < 2;
+  var btn = $('cmp-go');
+  btn.disabled = cmpIds.length < 2;
   btn.textContent = cmpIds.length < 2 ? 'Pick 1 more' : 'Compare →';
 }
-
-function clearCmp() { cmpIds = []; syncCbar(); applyFilt(); }
-
+function clearCmp() { cmpIds = []; syncCmpBar(); applyFilt(); }
 function openCmp() {
   if (cmpIds.length < 2) return;
-  var a = BKIDS[cmpIds[0]], b = BKIDS[cmpIds[1]];
-  if (!a || !b) return;
-
-  var FIELDS = [
+  var a = BKID[cmpIds[0]], b = BKID[cmpIds[1]]; if (!a||!b) return;
+  var KEYS = [
     ['Name','name'],['Email','email'],['Phone','phone'],
     ['Booking ID','booking_id'],['Tickets','quantity'],['Amount','total_amount'],
     ['UTR','transaction_id'],['Event','event_name'],
-    ['Date','event_date'],['Time','event_time'],['Venue','venue'],
-    ['Status','approval_status'],['Submitted','submitted_at']
+    ['Date','event_date'],['Venue','venue'],['Status','approval_status'],
+    ['Submitted','submitted_at']
   ];
-
   function col(main, other) {
-    var rows = FIELDS.map(function(p) {
-      var k = p[1], lbl = p[0];
-      var va = main[k] != null ? main[k] : '—';
-      var vb = other[k] != null ? other[k] : '—';
-      if (k === 'submitted_at') {
-        va = va !== '—' ? new Date(va).toLocaleString('en-IN') : '—';
-        vb = vb !== '—' ? new Date(vb).toLocaleString('en-IN') : '—';
-      }
-      if (k === 'total_amount') {
-        va = va !== '—' ? '₹' + va : '—';
-        vb = vb !== '—' ? '₹' + vb : '—';
-      }
+    var rows = KEYS.map(function(p) {
+      var va = main[p[1]] != null ? main[p[1]] : '—';
+      var vb = other[p[1]] != null ? other[p[1]] : '—';
+      if (p[1]==='submitted_at') { va=va!=='—'?new Date(va).toLocaleString('en-IN'):'—'; vb=vb!=='—'?new Date(vb).toLocaleString('en-IN'):'—'; }
+      if (p[1]==='total_amount') { va=va!=='—'?'₹'+va:'—'; vb=vb!=='—'?'₹'+vb:'—'; }
       var diff = String(va) !== String(vb);
-      return '<div class="cfield' + (diff ? ' diff' : '') + '"><label>' + lbl + '</label><span>' + esc(String(va)) + '</span></div>';
+      return '<div class="cmp-row' + (diff?' diff':'') + '"><label>' + p[0] + '</label><span>' + esc(String(va)) + '</span></div>';
     }).join('');
-
-    // Screenshot uses safe img src set directly, onclick uses openLB_id with known prefix
-    var ssHtml = '';
     var url = ssUrl(main.screenshot_url);
-    if (url) {
-      // give each col a unique prefix based on booking_id
-      var pfx = 'cmp-' + (main.booking_id || 'A').replace(/[^a-z0-9]/gi, '');
-      ssHtml = '<img class="ss-img" id="' + pfx + '-ss-img" src="' + esc(url) + '" onclick="openLB_id(\'' + pfx + '\')" style="width:100%;margin-top:.65rem" title="Tap to enlarge">';
-    } else {
-      ssHtml = '<div style="font-size:.72rem;color:var(--iron);font-style:italic;margin-top:.65rem">No screenshot uploaded</div>';
-    }
-
-    return '<div class="ccol"><div class="cctitle">' + esc(main.booking_id || main.name || 'Booking') + '</div>' + rows + ssHtml + '</div>';
+    var pfx = 'cmp' + esc(main.booking_id||'A').replace(/\W/g,'');
+    var ssH = url
+      ? '<img class="ss-img" id="' + pfx + '-ss-img" src="' + esc(url) + '" onclick="openLB_id(\'' + pfx + '\')" style="width:100%;margin-top:.65rem">'
+      : '<div style="font-size:.72rem;color:var(--t4);font-style:italic;margin-top:.65rem">No screenshot</div>';
+    return '<div class="cmp-col"><div class="cmp-col-hd">' + esc(main.booking_id||main.name||'Booking') + '</div>' + rows + ssH + '</div>';
   }
-
-  setHTML('cgrid', col(a, b) + col(b, a));
+  html('cmp-grid', col(a,b) + col(b,a));
   show('ov-cmp');
 }
 
-function closeCmp() { hide('ov-cmp'); }
+// ════════════════════════════════════════
+//  SET STATUS
+// ════════════════════════════════════════
+async function doStatus(id, status) {
+  try {
+    var res = await fetch(SB + '/rest/v1/ticket_bookings?id=eq.' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: Object.assign({}, AH, { 'Content-Type':'application/json', Prefer:'return=minimal' }),
+      body: JSON.stringify({ approval_status:status, approved_at:new Date().toISOString(), approved_by:'admin' })
+    });
+    if (!res.ok) { toast('Update failed: ' + res.status, true); return; }
+    for (var i=0; i<allBk.length; i++) {
+      if (allBk[i].id === id) { allBk[i].approval_status = status; break; }
+    }
+    if (BKID[id]) BKID[id].approval_status = status;
+    updateStats(); applyFilt();
+    if (curPage==='approved'||curPage==='rejected') renderSub(curPage);
+    toast(status==='approved' ? '✅ Booking approved!' : '❌ Booking rejected.');
+  } catch(e) { toast('Error: ' + e.message, true); }
+}
 
-// ────────────────────────────────────────
+// ════════════════════════════════════════
+//  DELETE — single, bulk, clear all
+// ════════════════════════════════════════
+function askDel1(id) {
+  var b = BKID[id];
+  var nm = b ? (b.name || b.booking_id || 'booking') : 'booking';
+  txt('cf-ico', '🗑️');
+  txt('cf-h',   'Delete Booking?');
+  html('cf-p',  'Permanently delete booking for <span class="hi">' + esc(nm) + '</span>. This cannot be undone.');
+  hide('cf-count');
+  txt('cf-ok',  '🗑️ Delete');
+  cfCb = function(){ doDel([id]); };
+  show('ov-cf');
+}
+
+function askBulkDel() {
+  var n = selSet.size;
+  if (!n) { toast('No bookings selected', true); return; }
+  txt('cf-ico', '🗑️');
+  txt('cf-h',   'Delete ' + n + ' Booking' + (n>1?'s':'') + '?');
+  html('cf-p',  'You are about to permanently delete <span class="hi">' + n + ' booking' + (n>1?'s':'') + '</span>. This cannot be undone.');
+  $('cf-count').textContent = n + ' booking' + (n>1?'s':'') + ' will be deleted';
+  show('cf-count');
+  txt('cf-ok',  '🗑️ Delete ' + n);
+  cfCb = function(){ doDel([...selSet]); };
+  show('ov-cf');
+}
+
+function askClearAll() {
+  var ids = filt.map(function(b){ return b.id; });
+  if (!ids.length) { toast('Nothing to delete', true); return; }
+  var label = curFilt === 'all' ? 'all bookings' : 'all ' + curFilt + ' bookings';
+  txt('cf-ico', '⚠️');
+  txt('cf-h',   'Clear All?');
+  html('cf-p',  'Delete <span class="hi">' + ids.length + ' ' + label + '</span>? This is permanent and cannot be undone.');
+  $('cf-count').textContent = ids.length + ' booking' + (ids.length>1?'s':'') + ' in current view';
+  show('cf-count');
+  txt('cf-ok',  '🗑️ Delete All ' + ids.length);
+  cfCb = function(){ doDel(ids); };
+  show('ov-cf');
+}
+
+function cfOk()  { closeOv('ov-cf'); if (cfCb) cfCb(); }
+
+async function doDel(ids) {
+  if (!ids.length) return;
+  // delete in chunks of 100 to avoid URL length limit
+  var chunks = [];
+  for (var i=0; i<ids.length; i+=100) chunks.push(ids.slice(i,i+100));
+  try {
+    for (var c=0; c<chunks.length; c++) {
+      var res = await fetch(SB + '/rest/v1/ticket_bookings?id=in.(' + chunks[c].join(',') + ')', {
+        method: 'DELETE',
+        headers: Object.assign({}, AH, { Prefer:'return=minimal' })
+      });
+      if (!res.ok) throw new Error('Delete failed: ' + res.status);
+    }
+    // remove from local state
+    var gone = {};
+    ids.forEach(function(id){ gone[id] = true; });
+    allBk = allBk.filter(function(b){ return !gone[b.id]; });
+    ids.forEach(function(id){ delete BKID[id]; selSet.delete(id); });
+    updateStats(); applyFilt();
+    if (curPage==='approved'||curPage==='rejected') renderSub(curPage);
+    syncSelBar();
+    toast('🗑️ Deleted ' + ids.length + ' booking' + (ids.length>1?'s':'') + ' successfully');
+  } catch(e) { toast(e.message, true); }
+}
+
+// ════════════════════════════════════════
 //  SCREENSHOTS GALLERY
-// ────────────────────────────────────────
-async function fetchSsCount() {
+// ════════════════════════════════════════
+async function loadSsCount() {
   try {
     var res = await fetch(SB + '/storage/v1/object/list/' + BUCKET, {
-      method: 'POST',
-      headers: Object.assign({}, AH, { 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ limit: 200, offset: 0 })
+      method:'POST',
+      headers:Object.assign({},AH,{'Content-Type':'application/json'}),
+      body:JSON.stringify({limit:200,offset:0})
     });
     if (!res.ok) return;
     var files = await res.json();
-    setText('sb-ssc', files.length);
-  } catch (e) {}
+    txt('sb-ssc', files.length);
+  } catch(_){}
 }
 
 async function loadSS() {
-  setHTML('garea', '<div class="loading"><span class="spin"></span> Loading screenshots…</div>');
+  html('gal-area', '<div class="loader"><span class="spin"></span>Loading screenshots…</div>');
   try {
     var res = await fetch(SB + '/storage/v1/object/list/' + BUCKET, {
-      method: 'POST',
-      headers: Object.assign({}, AH, { 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ limit: 200, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
+      method:'POST',
+      headers:Object.assign({},AH,{'Content-Type':'application/json'}),
+      body:JSON.stringify({limit:200,offset:0,sortBy:{column:'created_at',order:'desc'}})
     });
     if (!res.ok) throw new Error('Storage error ' + res.status);
     var files = await res.json();
-    setText('sb-ssc', files.length);
-    setText('ginfo', files.length + ' screenshot' + (files.length !== 1 ? 's' : '') + ' uploaded by users');
-
-    if (!files.length) {
-      setHTML('garea', emptyHTML('🖼️', 'No screenshots uploaded yet.'));
-      return;
-    }
-
-    // Build FMAP cache — onclick uses integer index
-    FMAP = {};
-    files.forEach(function(f, i) {
-      var url    = PUBBASE + encodeURIComponent(f.name);
+    txt('sb-ssc', files.length);
+    txt('gal-info', files.length + ' screenshot' + (files.length!==1?'s':'') + ' uploaded');
+    if (!files.length) { html('gal-area', emptyState('🖼️','No screenshots uploaded yet.', 'Screenshots appear here after users submit their payment proof')); return; }
+    FM = {};
+    files.forEach(function(f,i){
+      var url = PUBBASE + encodeURIComponent(f.name);
       var linked = null;
-      for (var j = 0; j < allBk.length; j++) {
+      for (var j=0; j<allBk.length; j++){
         var u = ssUrl(allBk[j].screenshot_url);
-        if (u && (u.indexOf(encodeURIComponent(f.name)) !== -1 || u.indexOf(f.name) !== -1)) {
-          linked = allBk[j]; break;
-        }
+        if (u && (u.indexOf(encodeURIComponent(f.name))!==-1 || u.indexOf(f.name)!==-1)) { linked=allBk[j]; break; }
       }
-      FMAP[i] = { url: url, name: f.name, linked: linked, meta: f.metadata, created: f.created_at };
+      FM[i] = {url:url, name:f.name, linked:linked, meta:f.metadata, created:f.created_at};
     });
-
-    setHTML('garea', '<div class="ggrid">' + files.map(function(f, i) { return galCard(i); }).join('') + '</div>');
-  } catch (e) {
-    setHTML('garea', emptyHTML('⚠️', e.message));
-  }
+    html('gal-area', '<div class="gal-grid">' + files.map(function(f,i){ return galCard(i); }).join('') + '</div>');
+  } catch(e) { html('gal-area', emptyState('⚠️', e.message, '')); }
 }
 
 function galCard(i) {
-  var f       = FMAP[i];
-  var url     = f.url;
-  var linked  = f.linked;
-  var size    = f.meta && f.meta.size ? fmtBytes(f.meta.size) : '';
-  var date    = f.created ? new Date(f.created).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : '';
-  var meta    = [size, date].filter(Boolean).join(' · ');
-
-  var badge = '';
-  if (linked) {
-    var bclr = { approved: 'var(--green)', pending: 'var(--yellow)', rejected: 'var(--red)' };
-    badge = '<span class="gbadge" style="background:' + (bclr[linked.approval_status] || 'var(--ash)') + ';color:#000">' + esc(linked.approval_status) + '</span>';
-  }
-
-  // Find idx of linked booking in BK so we can open detail safely
+  var f = FM[i], url = f.url, linked = f.linked;
+  var size = f.meta&&f.meta.size ? fmtBytes(f.meta.size) : '';
+  var date = f.created ? new Date(f.created).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}) : '';
+  var bclr = {approved:['#10b981','#000'], pending:['#f59e0b','#000'], rejected:['#ef4444','#fff']};
+  var badge = linked ? '<span class="gal-status" style="background:' + (bclr[linked.approval_status]||['#888','#fff'])[0] + ';color:' + (bclr[linked.approval_status]||['#888','#fff'])[1] + '">' + esc(linked.approval_status) + '</span>' : '';
   var detIdx = -1;
   if (linked) {
-    filt.forEach(function(b, j) { if (b.id === linked.id) detIdx = j; });
-    // If not in filt, look in allBk and temporarily store it
-    if (detIdx === -1) {
-      var tmpIdx = 9000 + i;
-      BK[tmpIdx] = linked;
-      detIdx = tmpIdx;
-    }
+    filt.forEach(function(b,j){ if(b.id===linked.id) detIdx=j; });
+    if (detIdx===-1) { var k=9000+i; BK[k]=linked; detIdx=k; }
   }
-
   var linkRow = linked
-    ? '<div class="glink" onclick="event.stopPropagation();openDet(' + detIdx + ')">🔗 ' + esc(linked.booking_id || linked.name || 'Booking') + '</div>'
-    : '<div class="gunlinked">Not linked to booking</div>';
-
-  var bookBtn = linked
-    ? '<button class="btn bv" onclick="event.stopPropagation();openDet(' + detIdx + ')">📋</button>'
-    : '';
-
-  return '<div class="gcard" onclick="openLB_f(' + i + ')">' +
-    '<div class="gimg-wrap">' +
-      '<img class="gimg dim" src="' + esc(url) + '"' +
-        ' onload="this.classList.remove(\'dim\')"' +
-        ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"' +
-        ' alt="">' +
-      '<div class="gph" style="display:none">🖼️</div>' +
-      badge +
+    ? '<div class="gal-link" onclick="event.stopPropagation();openDet(' + detIdx + ')">🔗 ' + esc(linked.booking_id||linked.name||'Booking') + '</div>'
+    : '<div class="gal-unlinked">Not linked to booking</div>';
+  var bookBtn = linked ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDet(' + detIdx + ')">📋</button>' : '';
+  return '<div class="gal-card" onclick="openLB_f(' + i + ')">' +
+    '<div class="gal-img-wrap">' +
+      '<img class="gal-img loading" src="' + esc(url) + '" onload="this.classList.remove(\'loading\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" alt="">' +
+      '<div class="gal-no-img" style="display:none">🖼️</div>' + badge +
     '</div>' +
-    '<div class="gbody">' +
-      '<div class="gname" title="' + esc(f.name) + '">' + esc(f.name) + '</div>' +
-      '<div class="gmeta">' + meta + '</div>' +
+    '<div class="gal-body">' +
+      '<div class="gal-name" title="' + esc(f.name) + '">' + esc(f.name) + '</div>' +
+      '<div class="gal-meta">' + [size,date].filter(Boolean).join(' · ') + '</div>' +
       linkRow +
-      '<div class="gacts">' +
-        '<button class="btn bs" style="flex:1" onclick="event.stopPropagation();openLB_f(' + i + ')">🔍 Enlarge</button>' +
-        '<button class="btn bv" onclick="event.stopPropagation();window.open(\'' + esc(url) + '\',\'_blank\')">↗</button>' +
+      '<div class="gal-acts">' +
+        '<button class="btn btn-blue btn-sm" style="flex:1" onclick="event.stopPropagation();openLB_f(' + i + ')">🔍 Enlarge</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();window.open(\'' + esc(url) + '\',\'_blank\')">↗</button>' +
         bookBtn +
       '</div>' +
     '</div>' +
   '</div>';
 }
+function fmtBytes(n){ if(n<1024)return n+' B'; if(n<1048576)return(n/1024).toFixed(1)+' KB'; return(n/1048576).toFixed(1)+' MB'; }
 
-function fmtBytes(n) {
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
-  return (n / 1048576).toFixed(1) + ' MB';
-}
-
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  TICKET VERIFY
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 function doVerify() {
-  var q = document.getElementById('vin').value.trim().toLowerCase();
-  if (!q) { toast('Enter a Booking ID or UTR.', true); return; }
+  var q = $('vin').value.trim().toLowerCase();
+  if (!q) { toast('Enter a Booking ID or UTR', true); return; }
   show('vres');
-
   var b = null;
-  for (var i = 0; i < allBk.length; i++) {
+  for (var i=0; i<allBk.length; i++) {
     var x = allBk[i];
-    if ((x.booking_id || '').toLowerCase() === q ||
-        (x.transaction_id || '').toLowerCase() === q ||
-        (x.booking_id || '').toLowerCase().indexOf(q) !== -1) {
-      b = x; break;
-    }
+    if ((x.booking_id||'').toLowerCase()===q || (x.transaction_id||'').toLowerCase()===q || (x.booking_id||'').toLowerCase().indexOf(q)!==-1) { b=x; break; }
   }
-
   if (!b) {
-    setHTML('vres', '<div class="vresult"><div class="vbanner notfound"><div class="vico">🚫</div><div class="vtxt"><h4>Not Found</h4><p>No booking matches &ldquo;' + esc(q) + '&rdquo;. Check and try again.</p></div></div></div>');
+    html('vres', '<div class="verify-card"><div class="v-banner notfound"><div class="v-ico">🚫</div><div><div class="v-title">Not Found</div><div class="v-msg">No booking matches "<strong>' + esc(q) + '</strong>".</div></div></div></div>');
     return;
   }
-
-  var s    = b.approval_status || 'pending';
-  var ico  = { approved: '✅', pending: '⏳', rejected: '❌' };
-  var msg  = { approved: 'VALID — approved for entry.', pending: 'Pending — not yet confirmed.', rejected: 'Rejected — not valid for entry.' };
-  var dt   = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN') : '—';
-  var url  = ssUrl(b.screenshot_url);
-
-  // Temporarily store in BK for safe lightbox access
-  var vIdx = 8000;
-  BK[vIdx] = b;
-
-  var ssBlock = url ? '<div class="ss-blk"><div class="ss-lbl">Payment Screenshot</div>' +
-    '<img class="ss-img" id="v-ss-img" src="' + esc(url) + '" onclick="openLB_id(\'v-ss\')" alt="Screenshot"></div>' : '';
-
-  var actBlock = s === 'pending'
-    ? '<div class="vacts">' +
-        '<button class="btn ba blg" onclick="setStatus(\'' + esc(b.id) + '\',\'approved\');setTimeout(doVerify,400)">✅ Approve</button>' +
-        '<button class="btn br blg" onclick="setStatus(\'' + esc(b.id) + '\',\'rejected\');setTimeout(doVerify,400)">❌ Reject</button>' +
-      '</div>'
-    : '';
-
-  setHTML('vres',
-    '<div class="vresult">' +
-    '<div class="vbanner ' + s + '"><div class="vico">' + (ico[s] || '⏳') + '</div><div class="vtxt"><h4>' + s.toUpperCase() + '</h4><p>' + (msg[s] || '') + '</p></div></div>' +
-    '<div class="vdg">' +
-      '<div class="vf"><label>Name</label><span>' + esc(b.name || '—') + '</span></div>' +
-      '<div class="vf"><label>Email</label><span>' + esc(b.email || '—') + '</span></div>' +
-      '<div class="vf"><label>Phone</label><span>' + esc(b.phone || '—') + '</span></div>' +
-      '<div class="vf"><label>Booking ID</label><span class="mono">' + esc(b.booking_id || '—') + '</span></div>' +
-      '<div class="vf"><label>Tickets</label><span>' + (b.quantity || '—') + ' ticket(s)</span></div>' +
-      '<div class="vf"><label>Amount</label><span style="color:var(--amber);font-weight:700">₹' + (b.total_amount || '—') + '</span></div>' +
-      '<div class="vf"><label>Event</label><span>' + esc(b.event_name || '—') + '</span></div>' +
-      '<div class="vf"><label>Venue</label><span>' + esc(b.venue || '—') + '</span></div>' +
-      '<div class="vf"><label>UTR</label><span class="mono">' + esc(b.transaction_id || '—') + '</span></div>' +
-      '<div class="vf"><label>Submitted</label><span>' + esc(dt) + '</span></div>' +
+  var s   = b.approval_status || 'pending';
+  var ico = {approved:'✅',pending:'⏳',rejected:'❌'};
+  var msg = {approved:'Valid ticket — approved for entry.',pending:'Pending approval — entry not yet confirmed.',rejected:'Ticket rejected — not valid for entry.'};
+  var dt  = b.submitted_at ? new Date(b.submitted_at).toLocaleString('en-IN') : '—';
+  var url = ssUrl(b.screenshot_url);
+  var vi  = 8000; BK[vi] = b;
+  html('vres',
+    '<div class="verify-card">' +
+    '<div class="v-banner ' + s + '"><div class="v-ico">' + (ico[s]||'⏳') + '</div><div><div class="v-title">' + s.toUpperCase() + '</div><div class="v-msg">' + (msg[s]||'') + '</div></div></div>' +
+    '<div class="v-dg">' +
+      vf('Name', esc(b.name||'—')) + vf('Email', esc(b.email||'—')) +
+      vf('Phone', b.phone||'—') + vf('Booking ID', '<span style="font-family:var(--fm)">' + esc(b.booking_id||'—') + '</span>') +
+      vf('Tickets', (b.quantity||'—') + ' ticket(s)') + vf('Amount', '<span style="color:var(--amber);font-weight:700">₹' + (b.total_amount||'—') + '</span>') +
+      vf('Event', esc(b.event_name||'—')) + vf('Venue', esc(b.venue||'—')) +
+      vf('UTR', '<span style="font-family:var(--fm)">' + esc(b.transaction_id||'—') + '</span>') + vf('Submitted', esc(dt)) +
     '</div>' +
-    ssBlock + actBlock +
+    (url ? '<div class="ss-block"><div class="ss-block-lbl">Payment Screenshot</div><img class="ss-img" id="vs-ss-img" src="' + esc(url) + '" onclick="openLB_id(\'vs-ss\')" alt="Screenshot"></div>' : '') +
+    (s==='pending' ? '<div class="v-acts"><button class="btn btn-green btn-lg" onclick="doStatus(\'' + esc(b.id) + '\',\'approved\');setTimeout(doVerify,400)">✅ Approve</button><button class="btn btn-red btn-lg" onclick="doStatus(\'' + esc(b.id) + '\',\'rejected\');setTimeout(doVerify,400)">❌ Reject</button></div>' : '') +
     '</div>'
   );
 }
+function vf(l,v){ return '<div class="v-field"><label>' + l + '</label><span>' + v + '</span></div>'; }
 
-// ────────────────────────────────────────
-//  SET STATUS
-// ────────────────────────────────────────
-async function setStatus(id, status) {
-  try {
-    var res = await fetch(SB + '/rest/v1/ticket_bookings?id=eq.' + encodeURIComponent(id), {
-      method: 'PATCH',
-      headers: Object.assign({}, AH, { 'Content-Type': 'application/json', Prefer: 'return=minimal' }),
-      body: JSON.stringify({ approval_status: status, approved_at: new Date().toISOString(), approved_by: 'admin' })
-    });
-    if (!res.ok) { toast('Update failed: ' + res.status, true); return; }
-    for (var i = 0; i < allBk.length; i++) {
-      if (allBk[i].id === id) { allBk[i].approval_status = status; break; }
-    }
-    BKIDS[id] && (BKIDS[id].approval_status = status);
-    updateStats();
-    applyFilt();
-    if (curPage === 'approved' || curPage === 'rejected') renderSub(curPage);
-    toast(status === 'approved' ? '✅ Approved!' : '❌ Rejected.');
-  } catch (e) { toast('Error: ' + e.message, true); }
-}
-
-// ────────────────────────────────────────
-//  DELETE
-// ────────────────────────────────────────
-function askDel(id) {
-  var b = BKIDS[id];
-  var nm = b ? esc(b.name || b.booking_id || 'booking') : 'booking';
-  setText('cf-icon', '🗑️');
-  setText('cf-h', 'Delete Booking?');
-  setHTML('cf-p', 'Permanently delete booking for <span class="hi">' + nm + '</span>. This cannot be undone.');
-  setText('cf-ok', '🗑️ Delete');
-  cfCb = function() { doDel([id]); };
-  show('ov-confirm');
-}
-
-function cfYes() { closeCf(); if (cfCb) cfCb(); }
-function closeCf() { hide('ov-confirm'); cfCb = null; }
-
-async function doDel(ids) {
-  try {
-    var res = await fetch(SB + '/rest/v1/ticket_bookings?id=in.(' + ids.join(',') + ')', {
-      method: 'DELETE',
-      headers: Object.assign({}, AH, { Prefer: 'return=minimal' })
-    });
-    if (!res.ok) { toast('Delete failed.', true); return; }
-    var gone = {};
-    ids.forEach(function(id) { gone[id] = true; });
-    allBk = allBk.filter(function(b) { return !gone[b.id]; });
-    ids.forEach(function(id) { delete BKIDS[id]; });
-    updateStats(); applyFilt();
-    if (curPage === 'approved' || curPage === 'rejected') renderSub(curPage);
-    toast('🗑️ Deleted ' + ids.length + ' booking' + (ids.length > 1 ? 's' : '') + '.');
-  } catch (e) { toast('Error: ' + e.message, true); }
-}
-
-// ────────────────────────────────────────
+// ════════════════════════════════════════
 //  HELPERS
-// ────────────────────────────────────────
-function setHTML(id, h) { var el = document.getElementById(id); if (el) el.innerHTML = h; }
-function setText(id, t) { var el = document.getElementById(id); if (el) el.textContent = t; }
-function show(id) { var el = document.getElementById(id); if (el) el.classList.remove('hidden'); }
-function hide(id) { var el = document.getElementById(id); if (el) el.classList.add('hidden'); }
+// ════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function html(id,h){ var el=$(id); if(el) el.innerHTML=h; }
+function txt(id,t){ var el=$(id); if(el) el.textContent=t; }
+function show(id){ var el=$(id); if(el) el.classList.remove('hidden'); }
+function hide(id){ var el=$(id); if(el) el.classList.add('hidden'); }
+function closeOv(id){ hide(id); }
 
-function emptyHTML(icon, msg) {
-  return '<div class="empty"><div class="ei">' + icon + '</div><div class="et">' + msg + '</div></div>';
+function loader(){ return '<div class="loader"><span class="spin"></span>Loading…</div>'; }
+function emptyState(ico, msg, sub) {
+  return '<div class="empty-state"><div class="empty-ico">' + ico + '</div><div class="empty-txt">' + msg + '</div>' + (sub?'<div class="empty-sub">'+sub+'</div>':'') + '</div>';
 }
 
 function toast(msg, isErr) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (isErr ? ' err' : '');
+  var el = $('toast'), dot = el.querySelector('.t-dot'), msgEl = $('toast-msg');
+  msgEl.textContent = msg;
+  el.className = 'toast show ' + (isErr ? 'err' : 'ok');
   clearTimeout(el._t);
-  el._t = setTimeout(function() { el.classList.remove('show'); }, 2800);
+  el._t = setTimeout(function(){ el.classList.remove('show'); }, 3000);
 }
 
-// ────────────────────────────────────────
-//  OVERLAY CLOSE ON BACKDROP + KEYBOARD
-// ────────────────────────────────────────
-['ov-detail','ov-cmp','ov-confirm'].forEach(function(id) {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) {
-      if (id === 'ov-detail')  closeDet();
-      if (id === 'ov-cmp')     closeCmp();
-      if (id === 'ov-confirm') closeCf();
-    }
-  });
+// ════════════════════════════════════════
+//  OVERLAY CLOSE / KEYBOARD
+// ════════════════════════════════════════
+['ov-det','ov-cmp','ov-cf'].forEach(function(id) {
+  $(id).addEventListener('click', function(e){ if(e.target===this) closeOv(id); });
 });
-document.getElementById('lb').addEventListener('click', function(e) {
-  if (e.target === this) closeLB();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeLB(); closeDet(); closeCmp(); closeCf(); }
+$('lb').addEventListener('click', function(e){ if(e.target===$('lb')) closeLB(); });
+document.addEventListener('keydown', function(e){
+  if (e.key==='Escape'){ closeLB(); closeDet(); closeOv('ov-cmp'); closeOv('ov-cf'); }
 });
 
 // Auto-refresh every 60s
-setInterval(function() { loadBookings(); }, 60000);
+setInterval(function(){ loadBookings(); }, 60000);
 </script>
 </body>
 </html>
